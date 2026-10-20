@@ -475,3 +475,20 @@ p { margin: 0 0 8px; }
   .cond-mini { grid-template-columns: 1fr; }
   .compose-grid { grid-template-columns: 1fr; }
 }
+
+/* 就医导航卡片（状况详情 ③ 区块） */
+.medical-card {
+  background: #fdf6f0;
+  border: 1px solid #ecd8c8;
+  border-left: 4px solid #c2493a;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin: 8px 0 16px;
+}
+.medical-card .medical-dept { font-size: 15px; margin: 0 0 10px; }
+.medical-card .medical-sub { margin: 8px 0 4px; font-weight: 600; }
+.medical-card ul { margin: 4px 0 8px; padding-left: 18px; }
+.medical-card li { margin: 4px 0; font-size: 14px; line-height: 1.55; }
+.medical-card details { margin: 10px 0; }
+.medical-card summary { cursor: pointer; font-size: 13px; color: var(--green-d); }
+.medical-card .medical-footer { margin-top: 10px; }

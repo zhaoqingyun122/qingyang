@@ -257,6 +257,29 @@ async function main() {
   await shot('06-recipe');
   }
 
+  if (want('就医')) {
+  console.log('\n[就医导航]');
+  await goto('/conditions', 900);
+  await evaluate(`document.querySelector('[data-cond]').click()`);
+  await new Promise((r) => setTimeout(r, 700));
+  const med = await evaluate(`(() => {
+    const card = document.querySelector('#cond-detail .medical-card');
+    if (!card) return null;
+    const uls = [...card.querySelectorAll('ul')];
+    return {
+      dept: (card.querySelector('.medical-dept')?.textContent || '').includes('建议就诊科室'),
+      flagLi: uls[0] ? uls[0].querySelectorAll('li').length : 0,
+      prepLi: uls[1] ? uls[1].querySelectorAll('li').length : 0,
+      footer: (card.querySelector('.medical-footer')?.textContent || '').includes('不替代医生'),
+    };
+  })()`);
+  ok('就医导航：状况详情显示建议科室', !!med.value?.dept, JSON.stringify(med));
+  ok('就医导航：有针对性警示症状', (med.value?.flagLi || 0) >= 2, JSON.stringify(med));
+  ok('就医导航：有就诊前准备清单', (med.value?.prepLi || 0) >= 4, JSON.stringify(med));
+  ok('就医导航：免责口径', med.value?.footer === true, JSON.stringify(med));
+  await shot('12-medical');
+  }
+
   if (want('社区')) {
   console.log('\n[社区]');
   await goto('/community', 900);

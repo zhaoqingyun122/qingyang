@@ -2,6 +2,7 @@
 import { store } from '../lib/store.js';
 import { esc, html, qs, qsa, toast, modal } from '../lib/dom.js';
 import { recipeCard } from './home.js';
+import { MEDICAL_GUIDE } from '../data/medical.js';
 
 let current = null;
 // 记住用户最近一次的自述，用于在状况详情里说明“为什么推荐它”
@@ -147,6 +148,25 @@ function renderConditionDetail(view, c) {
 
     <h3 class="sec-title">② 能做的药膳（${recipes.length} 道）</h3>
     <div class="recipe-list">${recipes.map(recipeCard).join('') || '<p class="muted small">暂无药膳。</p>'}</div>
+
+    ${(function () {
+      const guide = MEDICAL_GUIDE.departments[c.id];
+      if (!guide) return '';
+      return `
+      <h3 class="sec-title">③ 就医导航（什么情况该去看医生）</h3>
+      <div class="medical-card">
+        <p class="medical-dept">🏥 <b>建议就诊科室：</b>${esc(guide.dept)}</p>
+        <p class="medical-sub"><b>出现以下情况，请尽快就医：</b></p>
+        <ul>${guide.flags.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>
+        <p class="medical-sub"><b>就诊前准备：</b></p>
+        <ul>${MEDICAL_GUIDE.prep.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>
+        <details class="medical-more">
+          <summary>所有状况通用的就医警示</summary>
+          <ul>${MEDICAL_GUIDE.globalRedFlags.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>
+        </details>
+        <p class="small muted medical-footer">${esc(MEDICAL_GUIDE.footer)}</p>
+      </div>`;
+    })()}
 
     <div class="safety big">
       <b>阅读提示</b>

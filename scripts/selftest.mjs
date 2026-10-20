@@ -53,6 +53,7 @@ const jsFiles = [
   'lib/backup.js',
   'lib/repo.js',
   'lib/utils.js',
+  'data/medical.js',
   'views/home.js',
   'views/conditions.js',
   'views/community.js',
@@ -117,6 +118,23 @@ for (const c of conditions) {
   const n = recipes.filter((r) => (r.conditionIds || []).includes(c.id)).length;
   ok(`状况有药膳 ${c.name}`, n >= 1, `${n} 道`);
 }
+
+// ---------- 2.5 就医导航 ----------
+section('就医导航');
+const medicalModule = await import(pathToFileURL(path.join(ROOT, 'js/data/medical.js')).href);
+const MG = medicalModule.MEDICAL_GUIDE;
+ok('就医导航：科室建议覆盖全部状况', (() => {
+  const condIds = conditions.map((c) => c.id);
+  return condIds.every((id) => MG.departments[id] && !!MG.departments[id].dept);
+})());
+ok('就医导航：每个状况有针对警示', (() => {
+  return conditions.every((c) => (MG.departments[c.id]?.flags || []).length >= 2);
+})());
+ok('就医导航：通用警示 >= 6 条', (MG.globalRedFlags || []).length >= 6, String((MG.globalRedFlags || []).length));
+ok('就医导航：就诊准备 >= 4 条', (MG.prep || []).length >= 4, String((MG.prep || []).length));
+ok('就医导航：免责口径含「不替代医生」', MG.footer.includes('不替代医生'), MG.footer);
+ok('就医导航：免责口径含「120/急诊」', /120|急诊/.test(MG.footer), MG.footer);
+ok('就医导航：警示症状不含诊断性断言', !MG.footer.includes('确诊'), MG.footer);
 
 // ---------- 3. 核心算法 ----------
 section('核心算法');

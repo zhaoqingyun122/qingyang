@@ -54,6 +54,7 @@ const jsFiles = [
   'lib/repo.js',
   'lib/utils.js',
   'data/medical.js',
+  'data/teas.js',
   'views/home.js',
   'views/conditions.js',
   'views/community.js',
@@ -135,6 +136,20 @@ ok('就医导航：就诊准备 >= 4 条', (MG.prep || []).length >= 4, String((
 ok('就医导航：免责口径含「不替代医生」', MG.footer.includes('不替代医生'), MG.footer);
 ok('就医导航：免责口径含「120/急诊」', /120|急诊/.test(MG.footer), MG.footer);
 ok('就医导航：警示症状不含诊断性断言', !MG.footer.includes('确诊'), MG.footer);
+
+// ---------- 2.6 泡茶饮 ----------
+section('泡茶饮');
+const teasModule = await import(pathToFileURL(path.join(ROOT, 'js/data/teas.js')).href);
+const TEAS = teasModule.TEAS;
+ok('茶饮数量 >= 12', TEAS.length >= 12, String(TEAS.length));
+ok('茶饮 id 唯一', new Set(TEAS.map((t) => t.id)).size === TEAS.length);
+for (const t of TEAS) {
+  ok(`茶饮字段完整 ${t.id}`, !!(t.name && t.method && t.adultPortion && t.teenPortion && (t.ingredients || []).length >= 2));
+  ok(`茶饮分龄份量不同 ${t.id}`, t.adultPortion !== t.teenPortion, `${t.adultPortion} | ${t.teenPortion}`);
+  ok(`茶饮状况引用有效 ${t.id}`, (t.conditionIds || []).every((id) => cIds.has(id)), (t.conditionIds || []).join(','));
+  ok(`茶饮有宜忌 ${t.id}`, (t.cautions || []).length >= 1);
+}
+ok('茶饮覆盖全部状况', conditions.every((c) => TEAS.some((t) => (t.conditionIds || []).includes(c.id))), TEAS.map((t) => t.conditionIds.join('/')).join(' | '));
 
 // ---------- 3. 核心算法 ----------
 section('核心算法');

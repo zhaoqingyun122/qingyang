@@ -492,3 +492,18 @@ p { margin: 0 0 8px; }
 .medical-card details { margin: 10px 0; }
 .medical-card summary { cursor: pointer; font-size: 13px; color: var(--green-d); }
 .medical-card .medical-footer { margin-top: 10px; }
+
+/* 状况详情 · 适合的泡茶 */
+.tea-list { display: grid; gap: 10px; margin: 8px 0 4px; }
+.tea-card {
+  background: #fff;
+  border: 1px solid #e5dfd3;
+  border-left: 4px solid #c98a1b;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.tea-card > b { font-size: 15px; }
+.tea-ing { margin: 4px 0; font-size: 14px; }
+.tea-card .dose-line { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 2px; }
+.tea-card .tea-caution { margin-top: 6px; }
+.tea-note { margin: 0 0 14px; }

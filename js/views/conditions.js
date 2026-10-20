@@ -3,6 +3,20 @@ import { store } from '../lib/store.js';
 import { esc, html, qs, qsa, toast, modal } from '../lib/dom.js';
 import { recipeCard } from './home.js';
 import { MEDICAL_GUIDE } from '../data/medical.js';
+import { TEAS } from '../data/teas.js';
+
+function teaCard(t) {
+  return `<div class="tea-card">
+    <b>🍵 ${esc(t.name)}</b>
+    <p class="tea-ing">配料：${esc((t.ingredients || []).join('、'))}</p>
+    <p class="small muted">${esc(t.method || '')}</p>
+    <div class="dose-line">
+      <span class="dose adult">成人 ${esc(t.adultPortion)}</span>
+      <span class="dose teen">青少年 ${esc(t.teenPortion)}</span>
+    </div>
+    ${(t.cautions || []).length ? `<p class="small muted tea-caution">宜忌：${esc(t.cautions.join('；'))}</p>` : ''}
+  </div>`;
+}
 
 let current = null;
 // 记住用户最近一次的自述，用于在状况详情里说明“为什么推荐它”
@@ -150,10 +164,19 @@ function renderConditionDetail(view, c) {
     <div class="recipe-list">${recipes.map(recipeCard).join('') || '<p class="muted small">暂无药膳。</p>'}</div>
 
     ${(function () {
+      const teas = TEAS.filter((t) => (t.conditionIds || []).includes(c.id));
+      if (!teas.length) return '';
+      return `
+      <h3 class="sec-title">③ 适合的泡茶（${teas.length} 款）</h3>
+      <div class="tea-list">${teas.map(teaCard).join('')}</div>
+      <p class="small muted tea-note">茶饮为家庭日常参考量：青少年指 12–18 岁左右，更小儿童需再减半并咨询医师；标注的“连饮不超过”请务必遵守，必要时就医。</p>`;
+    })()}
+
+    ${(function () {
       const guide = MEDICAL_GUIDE.departments[c.id];
       if (!guide) return '';
       return `
-      <h3 class="sec-title">③ 就医导航（什么情况该去看医生）</h3>
+      <h3 class="sec-title">④ 就医导航（什么情况该去看医生）</h3>
       <div class="medical-card">
         <p class="medical-dept">🏥 <b>建议就诊科室：</b>${esc(guide.dept)}</p>
         <p class="medical-sub"><b>出现以下情况，请尽快就医：</b></p>

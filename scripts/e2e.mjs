@@ -155,6 +155,10 @@ async function main() {
   await send('Page.enable');
   await send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
 
+  // 每次运行先整页强制刷新，确保加载最新模块代码（ES 模块只在页面加载时拉取一次，hash 导航不会重载）
+  await send('Page.reload', { ignoreCache: true });
+  await new Promise((r) => setTimeout(r, 1500));
+
   if (want('首页')) {
   console.log('\n[首页]');
   await goto('/', 1200);
@@ -278,6 +282,27 @@ async function main() {
   ok('就医导航：有就诊前准备清单', (med.value?.prepLi || 0) >= 4, JSON.stringify(med));
   ok('就医导航：免责口径', med.value?.footer === true, JSON.stringify(med));
   await shot('12-medical');
+  }
+
+  if (want('泡茶')) {
+  console.log('\n[泡茶饮]');
+  await goto('/conditions', 900);
+  await evaluate(`document.querySelector('[data-cond]').click()`);
+  await new Promise((r) => setTimeout(r, 700));
+  const tea = await evaluate(`(() => {
+    const cards = [...document.querySelectorAll('#cond-detail .tea-card')];
+    return {
+      n: cards.length,
+      title: (document.querySelector('#cond-detail .sec-title')?.textContent || '') || '',
+      hasTeaTitle: document.body.innerText.includes('适合的泡茶'),
+      adult: cards.some((c) => !!c.querySelector('.dose.adult')),
+      teen: cards.some((c) => !!c.querySelector('.dose.teen')),
+    };
+  })()`);
+  ok('泡茶饮：状况详情显示茶饮', (tea.value?.n || 0) >= 1, JSON.stringify(tea));
+  ok('泡茶饮：区块标题存在', tea.value?.hasTeaTitle === true, JSON.stringify(tea));
+  ok('泡茶饮：含成人/青少年双份量', tea.value?.adult === true && tea.value?.teen === true, JSON.stringify(tea));
+  await shot('13-tea');
   }
 
   if (want('社区')) {

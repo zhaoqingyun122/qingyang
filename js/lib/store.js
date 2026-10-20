@@ -178,6 +178,23 @@ class Store extends EventTarget {
     };
   }
 
+  /* ---------- 手动保存 ----------
+   * 数据平时已自动落盘；此方法在“立即保存”按钮被点击时调用，
+   * 显式把当前状态整体写回一遍并记录保存时间，给用户明确反馈。 */
+  async saveNow() {
+    await db.setMeta('visitors', this.visitors);
+    await db.setMeta('settings', this.settings);
+    for (const p of this.posts) await db.put('posts', p);
+    for (const r of this.identifications) await db.put('identifications', r);
+    const at = Date.now();
+    await db.setMeta('lastSavedAt', at);
+    this.emit('saved');
+    return at;
+  }
+  async lastSavedAt() {
+    return (await db.getMeta('lastSavedAt', 0)) || 0;
+  }
+
   async importBackup(data) {
     if (!data || data.app !== 'qingyang') throw new Error('不是青养导出的备份文件');    if (Array.isArray(data.visitors) && data.visitors.length) {
       this.visitors = data.visitors;

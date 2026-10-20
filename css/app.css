@@ -507,3 +507,7 @@ p { margin: 0 0 8px; }
 .tea-card .dose-line { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 2px; }
 .tea-card .tea-caution { margin-top: 6px; }
 .tea-note { margin: 0 0 14px; }
+
+/* 数据页 · 立即保存 */
+.save-panel { border-left: 4px solid var(--green); }
+.save-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 10px; }

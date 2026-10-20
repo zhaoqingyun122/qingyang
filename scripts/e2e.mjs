@@ -491,6 +491,26 @@ async function main() {
   ok('内容管理入口', (dataPage.value?.manage || 0) >= 3);
   await shot('11-data');
 
+  // 手动保存按钮：点击后显示保存时间，且落盘后元数据可读
+  const saveUI = await evaluate(`(() => {
+    const btn = document.querySelector('#save-now');
+    if (!btn) return { has: false };
+    btn.click();
+    return { has: true };
+  })()`);
+  await new Promise((r) => setTimeout(r, 700));
+  const saveAfter = await evaluate(`(() => {
+    const t = document.querySelector('#saved-at')?.textContent || '';
+    return { hasStamp: t.includes('上次保存：') && !t.includes('暂无记录') };
+  })()`);
+  const saveMeta = await evaluate(`(async () => {
+    const { store } = await import('./js/lib/store.js');
+    return (await store.lastSavedAt()) > 0;
+  })()`);
+  ok('手动保存：有「立即保存」按钮', saveUI.value?.has === true, JSON.stringify(saveUI));
+  ok('手动保存：点击后显示保存时间', saveAfter.value?.hasStamp === true, JSON.stringify(saveAfter));
+  ok('手动保存：保存时间已落盘', saveMeta.value === true);
+
   const backup = await evaluate(`(async () => {
     const { buildBackup } = await import('./js/lib/backup.js');
     const { store } = await import('./js/lib/store.js');

@@ -228,6 +228,8 @@ ok('store 有首次写入标记', storeSrc.includes("getMeta('seeded'"));
 ok('store 写入后派发事件', storeSrc.includes("this.emit('posts')"));
 ok('store 有备份导出', storeSrc.includes('exportBackup'));
 ok('store 有重置', storeSrc.includes('resetAll'));
+ok('store 有手动保存 saveNow', storeSrc.includes('saveNow'));
+ok('store 记录保存时间 lastSavedAt', storeSrc.includes('lastSavedAt'));
 
 // ---------- 5. 备份 ----------
 section('备份与恢复');

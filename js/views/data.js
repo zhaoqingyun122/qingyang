@@ -15,6 +15,7 @@ export async function renderData(view) {
   const { usage } = await estimateStorage();
   const mode = getStorageMode();
   const lastBackup = await getLastBackupTime();
+  const lastSaved = await store.lastSavedAt();
 
   const days = [];
   for (let i = 13; i >= 0; i -= 1) {
@@ -49,6 +50,15 @@ export async function renderData(view) {
             </div>`
           )
           .join('')}
+      </div>
+    </section>
+
+    <section class="panel save-panel">
+      <div class="panel-head"><h2>💾 数据保存</h2><span class="muted small">自动保存已开启</span></div>
+      <p class="muted small">你的每一步操作（发帖、点赞、收藏、评论、鉴别、偏好）都会<b>即时自动保存</b>到本机浏览器（IndexedDB），刷新、关闭、重启都不丢；这里也可以随时再手动保存一次。</p>
+      <div class="stack row save-row">
+        <button class="btn btn-primary" id="save-now">💾 立即保存</button>
+        <span class="muted small" id="saved-at">上次保存：${lastSaved ? fmtAt(lastSaved) : '—（暂无记录）'}</span>
       </div>
     </section>
 
@@ -130,7 +140,20 @@ async function getLastBackupTime() {
   }
 }
 
+function fmtAt(ts) {
+  const d = new Date(ts);
+  const p = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
 function bind(view) {
+  qs('#save-now', view).addEventListener('click', async () => {
+    const at = await store.saveNow();
+    const el = qs('#saved-at', view);
+    if (el) el.textContent = `上次保存：${fmtAt(at)}`;
+    toast('已保存到本机浏览器', 'ok');
+  });
+
   qs('#backup-btn', view).addEventListener('click', async () => {
     const data = await buildBackup(store);
     downloadText(`青养备份-${fmtDay(Date.now())}.json`, JSON.stringify(data, null, 2));

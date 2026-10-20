@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>青养 · 食疗健康生活</title>
+<link rel="stylesheet" href="./css/app.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand" id="brand" data-route="home">
+        <span class="brand-mark">青</span>
+        <span class="brand-text">
+          <b>青养</b>
+          <small>药食同源 · 食疗生活</small>
+        </span>
+      </div>
+
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="global-search" type="search" placeholder="搜物质 / 别名 / 药膳，例如：山药、祛湿、安神" autocomplete="off" />
+        <div id="search-suggest" class="suggest" hidden></div>
+      </div>
+
+      <div class="top-actions">
+        <span class="visitor-chip" id="visitor-chip" title="当前访客身份"></span>
+        <span class="save-state" id="save-state" title="本地保存状态">
+          <i class="dot"></i><span>本地已保存</span>
+        </span>
+      </div>
+    </header>
+
+    <nav class="tabbar" id="tabbar">
+      <a data-route="home" class="tab active"><span class="ti">①</span>首页 · 物质鉴别</a>
+      <a data-route="conditions" class="tab"><span class="ti">②</span>身体状况 · 药膳</a>
+      <a data-route="community" class="tab"><span class="ti">③</span>药膳社区</a>
+      <a data-route="data" class="tab"><span class="ti">④</span>数据与设置</a>
+    </nav>
+
+    <main id="view" class="view"></main>
+
+    <footer class="footbar">
+      <span>仅作日常食疗参考，不替代医生诊断与治疗；慢性病患者、孕产妇、儿童用药请在医师或药师指导下使用。</span>
+      <span id="storage-note"></span>
+    </footer>
+  </div>
+
+  <div id="modal-root"></div>
+  <div id="toast-root" class="toast-root"></div>
+
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# 青养 · Git 忽略规则
+
+# 本地导出文件（用户数据，避免误提交）
+青养备份-*.json
+青养帖子-*.md
+
+# 测试输出（截图保留——docs/design.html 有引用）
+scripts/e2e/report.json
+
+# 日志与临时文件
+*.log
+*.tmp
+
+# 系统文件
+Thumbs.db
+Desktop.ini
+.DS_Store

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>青养 · 页面结构与交互设计</title>
+<style>
+  :root {
+    --green: #2f8f5b; --green-deep: #1f6b42; --bg: #f6f4ee; --card: #ffffff;
+    --ink: #23312b; --muted: #6b7a72; --line: #e4e0d6;
+    --blue: #3a6ea5; --amber: #c98a1b; --red: #c2493a;
+    --ok: #2f8f5b; --warn: #c98a1b; --todo: #c2493a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.75 "Microsoft YaHei", "PingFang SC", system-ui, sans-serif; }
+  header.hero { background: linear-gradient(135deg, #1f6b42 0%, #2f8f5b 60%, #4ba176 100%); color: #fff; padding: 40px 24px 28px; }
+  header.hero h1 { margin: 0 0 6px; font-size: 26px; }
+  header.hero p { margin: 0; opacity: .92; max-width: 900px; }
+  nav.toc { background: var(--card); border-bottom: 1px solid var(--line); padding: 10px 24px; position: sticky; top: 0; z-index: 5; }
+  nav.toc a { color: var(--green-deep); text-decoration: none; margin-right: 16px; font-size: 14px; }
+  nav.toc a:hover { text-decoration: underline; }
+  main { max-width: 1000px; margin: 0 auto; padding: 24px; }
+  section { margin: 40px 0; }
+  h2.sec { font-size: 21px; border-left: 5px solid var(--green); padding-left: 12px; margin-top: 0; }
+  h3 { font-size: 17px; color: var(--green-deep); margin-bottom: 6px; }
+  .note { background: #eef6f0; border: 1px solid #cfe3d5; border-radius: 8px; padding: 10px 14px; font-size: 14px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; margin: 14px 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+  table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 10px; overflow: hidden; }
+  th, td { border: 1px solid var(--line); padding: 8px 12px; text-align: left; font-size: 14px; vertical-align: top; }
+  th { background: #eef3ee; }
+  .tag { display: inline-block; font-size: 12px; border-radius: 20px; padding: 1px 10px; margin-right: 6px; }
+  .tag.ok { background: #e2f3e8; color: var(--ok); }
+  .tag.warn { background: #fdf0d8; color: var(--warn); }
+  .tag.todo { background: #fbe3df; color: var(--todo); }
+  /* 站点地图 */
+  .ia { font-size: 14px; }
+  .ia ul { list-style: none; margin: 0; padding-left: 22px; border-left: 2px dashed var(--line); }
+  .ia > ul { border-left: none; padding-left: 0; }
+  .ia li { position: relative; margin: 7px 0; padding-left: 8px; }
+  .ia .node { display: inline-flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 4px 12px; }
+  .ia .node.root { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
+  .ia .node.mod { background: #eef3ee; border-color: #cfe0d2; }
+  .ia .node.page { background: #fff; }
+  .ia .node.modal { background: #f3f0ff; border-color: #d8d0f0; }
+  .ia .badge { font-size: 11px; color: var(--muted); }
+  /* 线框 */
+  .wire { border: 2px dashed #9db8a6; border-radius: 10px; padding: 10px; background: #fbfcfa; }
+  .wire .row { display: flex; gap: 8px; margin: 6px 0; }
+  .wire .col { display: flex; flex-direction: column; gap: 8px; }
+  .blk { border: 1px solid var(--line); border-radius: 6px; background: #fff; padding: 6px 10px; font-size: 13px; flex: 1; }
+  .blk.hl { background: #e8f4ec; border-color: #9cc3a9; }
+  .blk.hero { background: linear-gradient(135deg,#1f6b42,#4ba176); color: #fff; border: none; }
+  .blk.side { flex: 0 0 220px; }
+  .blk small { display: block; color: var(--muted); font-size: 12px; }
+  .blk b { font-size: 13.5px; }
+  /* 流程图 */
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14px; }
+  .step { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; max-width: 210px; }
+  .step b { display: block; font-size: 13.5px; }
+  .step small { color: var(--muted); }
+  .arrow { color: var(--green); font-weight: bold; font-size: 18px; }
+  /* 色板 */
+  .swatches { display: flex; flex-wrap: wrap; gap: 14px; }
+  .sw { width: 96px; }
+  .sw .chip { height: 44px; border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+  .sw small { font-size: 12px; color: var(--muted); }
+  .shot { max-width: 100%; border: 1px solid var(--line); border-radius: 10px; }
+  .shot-wrap { text-align: center; }
+  .shot-wrap figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .pill { display: inline-block; border-radius: 20px; padding: 2px 12px; font-size: 13px; }
+  .pill.b { background: #e3ecf7; color: var(--blue); }
+  .pill.a { background: #fdf0d8; color: var(--amber); }
+  .pill.r { background: #fbe3df; color: var(--red); }
+  .pill.g { background: #e2f3e8; color: var(--ok); }
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 30px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>青养 · 页面结构与交互设计</h1>
+  <p>药食同源 / 药膳健康生活 APP（本机离线运行）。本文档定义信息架构、页面布局、关键交互流程与视觉规范，并对照当前实现给出调整建议。所有资源离线自包含，可直接在浏览器打开。</p>
+</header>
+
+<nav class="toc">
+  <a href="#ia">一、信息架构</a>
+  <a href="#pages">二、页面结构</a>
+  <a href="#flows">三、交互流程</a>
+  <a href="#visual">四、视觉规范</a>
+  <a href="#audit">五、现状对照</a>
+  <a href="#next">六、调整建议</a>
+</nav>
+
+<main>
+
+<!-- ================= 一、信息架构 ================= -->
+<section id="ia">
+  <h2 class="sec">一、信息架构（站点地图）</h2>
+  <p class="note">全局顶部栏固定：品牌、全局搜索（带候选下拉）、当前访客身份。所有详情页与模态框都在同一个单页内切换，不产生新标签页。</p>
+  <div class="card ia">
+    <ul>
+      <li><span class="node root">顶部栏 · 品牌 + 全局搜索 + 访客身份</span></li>
+      <li><span class="node mod">① 首页 / 物质鉴别 <span class="badge">#/</span></span>
+        <ul>
+          <li><span class="node page">物质详情页 <span class="badge">#/substance/:id</span></span></li>
+          <li><span class="node page">药膳详情页 <span class="badge">#/recipe/:id</span></span></li>
+          <li><span class="node modal">模态：拍照鉴别 / 特征逐项选择</span></li>
+        </ul>
+      </li>
+      <li><span class="node mod">② 身体状况 → 药膳 <span class="badge">#/conditions</span></span>
+        <ul>
+          <li><span class="node page">状况详情（剂量对照表 + 药膳列表，页内展开）</span></li>
+          <li><span class="node page">药膳详情页（与首页共用）</span></li>
+        </ul>
+      </li>
+      <li><span class="node mod">③ 药膳社区 <span class="badge">#/community</span></span>
+        <ul>
+          <li><span class="node modal">模态：发帖编辑器（文字 / 照片 / 关联药膳 / 标签）</span></li>
+          <li><span class="node page">帖子导出：分享图片 / 纯文本（浏览器下载）</span></li>
+        </ul>
+      </li>
+      <li><span class="node mod">④ 数据与设置 <span class="badge">#/data</span></span>
+        <ul>
+          <li><span class="node modal">模态：内容管理（帖子 / 鉴别记录 / 访客）、备份预览、恢复确认、重置确认</span></li>
+        </ul>
+      </li>
+    </ul>
+    <p style="margin-top:12px;font-size:13px;color:var(--muted)">层级不超过 2 层；任何页面之间都可以通过顶部全局搜索直达（物质 / 药膳 / 状况 / 帖子）。</p>
+  </div>
+</section>
+
+<!-- ================= 二、页面结构 ================= -->
+<section id="pages">
+  <h2 class="sec">二、页面结构（线框）</h2>
+
+  <h3>1. 首页 · 物质鉴别</h3>
+  <div class="grid2">
+    <div class="wire">
+      <div class="blk hero"><b>Hero 区</b><small>“先认清这是什么，再想怎么吃”＋两大鉴别入口：拍照 / 特征选择</small></div>
+      <div class="blk hl"><b>全局搜索（顶部栏）</b><small>实时候选：物质 / 药膳 / 状况 / 帖子</small></div>
+      <div class="blk"><b>物质库</b><small>分类筛选 chips ＋ 卡片/列表切换 ＋ 每页条数 ＋ 关键词过滤</small></div>
+      <div class="row">
+        <div class="blk"><b>按身体状况找物质</b><small>12 种状况入口卡</small></div>
+        <div class="blk"><b>本机鉴别记录</b><small>最近拍照/特征鉴别，可点开</small></div>
+      </div>
+    </div>
+    <div class="shot-wrap">
+      <img class="shot" src="../scripts/e2e/01-home.png" alt="首页截图" />
+      <figcaption>当前实现效果</figcaption>
+    </div>
+  </div>
+
+  <h3>2. 物质详情页（识别终点）</h3>
+  <div class="grid2">
+    <div class="wire">
+      <div class="blk hl"><b>标题 + 类别/性味标签</b><small>名称、别名、类别</small></div>
+      <div class="row">
+        <div class="blk"><b>成人参考量</b><small>每日份量 + 频次</small></div>
+        <div class="blk"><b>青少年参考量</b><small>12–18 岁，减量对照</small></div>
+      </div>
+      <div class="blk"><b>药典条目</b><small>性味归经 / 功效 / 用法</small></div>
+      <div class="blk"><b>外形鉴别特征</b><small>形状 / 颜色 / 质地 / 气味 / 断面</small></div>
+      <div class="row">
+        <div class="blk"><b>能做的药膳</b><small>关联卡片</small></div>
+        <div class="blk"><b>适用身体状况 + 安全提示</b></div>
+      </div>
+    </div>
+    <div class="shot-wrap">
+      <img class="shot" src="../scripts/e2e/03-substance.png" alt="物质详情截图" />
+      <figcaption>当前实现效果</figcaption>
+    </div>
+  </div>
+
+  <h3>3. 身体状况 → 药膳</h3>
+  <div class="grid2">
+    <div class="wire">
+      <div class="blk hero"><b>自述症状输入</b><small>“用自己的话说，比如：吃一点就饱、大便稀”</small></div>
+      <div class="row">
+        <div class="blk"><b>12 种状况卡</b><small>名称 + 一句话描述</small></div>
+        <div class="blk"><b>匹配到的状况</b><small>按关键词匹配高亮</small></div>
+      </div>
+      <div class="blk hl"><b>剂量对照表</b><small>按物质列：成人 / 青少年 分列对照</small></div>
+      <div class="blk"><b>药膳列表 + 安全提示</b><small>用料 / 做法 / 分龄份量</small></div>
+    </div>
+    <div class="shot-wrap">
+      <img class="shot" src="../scripts/e2e/04-conditions.png" alt="身体状况截图" />
+      <figcaption>当前实现效果</figcaption>
+    </div>
+  </div>
+
+  <h3>4. 药膳详情页</h3>
+  <div class="grid2">
+    <div class="wire">
+      <div class="blk hl"><b>菜名 + 关联状况标签</b></div>
+      <div class="row">
+        <div class="blk"><b>成人份量</b><small>建议食用量</small></div>
+        <div class="blk"><b>青少年份量</b><small>建议食用量</small></div>
+      </div>
+      <div class="row">
+        <div class="blk"><b>用料清单</b><small>带用量</small></div>
+        <div class="blk"><b>做法步骤</b><small>编号步骤</small></div>
+      </div>
+      <div class="blk"><b>适用人群 / 注意事项</b></div>
+      <div class="blk"><b>分享到社区</b><small>一键带关联跳转发帖</small></div>
+    </div>
+    <div class="shot-wrap">
+      <img class="shot" src="../scripts/e2e/06-recipe.png" alt="药膳详情截图" />
+      <figcaption>当前实现效果</figcaption>
+    </div>
+  </div>
+
+  <h3>5. 药膳社区</h3>
+  <div class="grid2">
+    <div class="wire">
+      <div class="row">
+        <div class="col" style="flex:1">
+          <div class="blk hl"><b>信息流</b><small>全部 / 我的 / 收藏 / 点赞过 页签</small></div>
+          <div class="blk"><b>帖子卡片</b><small>图文 / 关联药膳 / 标签 / 点赞 / 收藏 / 评论 / 导出</small></div>
+          <div class="blk"><b>发帖按钮</b><small>＋ 分享我的药膳日常</small></div>
+        </div>
+        <div class="blk side"><b>侧栏</b><small>访客身份切换 / 新增、删除访客 / 社区规则</small></div>
+      </div>
+    </div>
+    <div class="shot-wrap">
+      <img class="shot" src="../scripts/e2e/08-community.png" alt="社区截图" />
+      <figcaption>当前实现效果</figcaption>
+    </div>
+  </div>
+
+  <h3>6. 数据与设置</h3>
+  <div class="grid2">
+    <div class="wire">
+      <div class="row">
+        <div class="blk"><b>统计卡片</b><small>物质数 / 药膳数 / 帖子数 / 鉴别次数 / 访客数</small></div>
+        <div class="blk"><b>14 天发帖图</b><small>柱状图</small></div>
+      </div>
+      <div class="blk"><b>内容管理</b><small>帖子 / 鉴别记录 / 访客（打开管理模态）</small></div>
+      <div class="blk hl"><b>本地备份</b><small>导出 .json / 从文件恢复（预览后确认）</small></div>
+      <div class="row">
+        <div class="blk"><b>偏好设置</b><small>主题 / 口味等，刷新保留</small></div>
+        <div class="blk"><b>清空与重置</b><small>危险操作，双重确认</small></div>
+      </div>
+    </div>
+    <div class="shot-wrap">
+      <img class="shot" src="../scripts/e2e/11-data.png" alt="数据页截图" />
+      <figcaption>当前实现效果</figcaption>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 三、交互流程 ================= -->
+<section id="flows">
+  <h2 class="sec">三、关键交互流程</h2>
+
+  <h3>流程 A · 物质鉴别（三条路汇到详情页）</h3>
+  <div class="flow">
+    <div class="step"><b>搜索 / 浏览</b><small>输入关键词或点类别</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>物质详情</b><small>剂量 / 药典 / 特征 / 药膳</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>记录在案</b><small>可选：收藏、去药膳、分享</small></div>
+  </div>
+  <div class="flow" style="margin-top:10px">
+    <div class="step"><b>拍照</b><small>调本机摄像头</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>颜色候选 Top 8</b><small>取主色比对（本地算法）</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>特征确认</b><small>形状/颜色/质地…补选</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>详情 + 保存鉴别记录</b></div>
+  </div>
+  <div class="flow" style="margin-top:10px">
+    <div class="step"><b>特征逐项选择</b><small>5 个维度 chips</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>实时候选</b><small>覆盖度打分排序</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>“就选第一个”确认</b><small>或手动选</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>详情页</b></div>
+  </div>
+
+  <h3>流程 B · 身体状况 → 药膳 → 分享</h3>
+  <div class="flow">
+    <div class="step"><b>自述症状</b><small>或直接点状况卡</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>匹配状况</b><small>关键词打分</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>剂量对照表</b><small>成人 / 青少年分列</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>选药膳 → 详情</b><small>用料做法分龄份量</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>发帖分享</b><small>自动带上关联药膳</small></div>
+  </div>
+
+  <h3>流程 C · 社区互动与导出</h3>
+  <div class="flow">
+    <div class="step"><b>发帖</b><small>文字 + ≤4 图 + 关联药膳 + 标签</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>信息流浏览</b><small>页签筛选 / 标签跳转</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>点赞 / 收藏 / 评论</b><small>以访客身份</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>导出分享图 / 文本</b><small>浏览器下载 PNG/TXT</small></div>
+  </div>
+
+  <h3>流程 D · 数据安全（备份 / 恢复 / 重置）</h3>
+  <div class="flow">
+    <div class="step"><b>导出备份</b><small>qingyang-backup .json</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>（换机/清缓存前）保存文件</b></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>从备份恢复</b><small>预览内容 → 确认覆盖</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>重置</b><small>双重确认，仅清本机数据</small></div>
+  </div>
+  <p class="note" style="margin-top:12px">所有流程均在本机完成，无任何网络请求；“记录”“收藏”“点赞”等操作立即落盘（IndexedDB），刷新后状态保持。</p>
+</section>
+
+<!-- ================= 四、视觉规范 ================= -->
+<section id="visual">
+  <h2 class="sec">四、视觉与交互规范</h2>
+
+  <h3>配色</h3>
+  <div class="swatches">
+    <div class="sw"><div class="chip" style="background:#1f6b42"></div><b>深绿</b><small>主品牌 / 标题</small></div>
+    <div class="sw"><div class="chip" style="background:#2f8f5b"></div><b>主绿</b><small>主按钮 / 高亮</small></div>
+    <div class="sw"><div class="chip" style="background:#f6f4ee"></div><b>米白底</b><small>页面背景</small></div>
+    <div class="sw"><div class="chip" style="background:#23312b"></div><b>墨绿黑</b><small>正文</small></div>
+    <div class="sw"><div class="chip" style="background:#3a6ea5"></div><b>蓝</b><small>成人剂量</small></div>
+    <div class="sw"><div class="chip" style="background:#c98a1b"></div><b>琥珀</b><small>青少年剂量</small></div>
+    <div class="sw"><div class="chip" style="background:#c2493a"></div><b>警示红</b><small>危险操作 / 禁忌</small></div>
+  </div>
+
+  <h3>语义约定</h3>
+  <table>
+    <tr><th>对象</th><th>呈现</th><th>说明</th></tr>
+    <tr><td>成人参考量</td><td><span class="pill b">蓝 · 成人</span></td><td>详情页剂量卡、状况页对照表左列</td></tr>
+    <tr><td>青少年参考量</td><td><span class="pill a">琥珀 · 青少年</span></td><td>12–18 岁；12 岁以下减半并咨询医师</td></tr>
+    <tr><td>安全 / 免责</td><td><span class="pill g">绿 · 提示框</span></td><td>每处剂量旁固定出现“不替代医生诊断”口径</td></tr>
+    <tr><td>危险操作</td><td><span class="pill r">红 · 删除/重置</span></td><td>删除帖子、删除访客、清空与重置</td></tr>
+    <tr><td>状态反馈</td><td>toast 轻提示</td><td>点赞、收藏、备份、导出等即时轻反馈，不弹窗打扰</td></tr>
+  </table>
+
+  <h3>交互细节约定</h3>
+  <ul>
+    <li><b>每屏一个主行动按钮</b>：首页是“拍照鉴别”，社区是“发帖”，数据页是“导出备份”。</li>
+    <li><b>危险操作双重确认</b>：删除 / 重置必须经过确认对话框（红字按钮）。</li>
+    <li><b>空状态引导</b>：列表为空时给出下一步行动文案，而不是空白。</li>
+    <li><b>键盘可达</b>：全局搜索 Enter 直达；评论输入框 Enter 发送；对话框可 Esc 关闭；按钮带 type 与 aria-label。</li>
+    <li><b>即时落盘</b>：任何写入操作后刷新不丢（IndexedDB）。</li>
+    <li><b>内容安全</b>：所有用户输入与搜索词经转义后渲染，避免注入。</li>
+  </ul>
+</section>
+
+<!-- ================= 五、现状对照 ================= -->
+<section id="audit">
+  <h2 class="sec">五、现状对照（已实现 / 待优化 / 建议）</h2>
+  <table>
+    <tr><th style="width:34%">设计项</th><th style="width:8%">状态</th><th>说明</th></tr>
+    <tr><td>四大模块各自的专属页面与功能</td><td><span class="tag ok">已实现</span></td><td>首页/状况/社区/数据各自独立视图与路由</td></tr>
+    <tr><td>全局搜索 + 候选下拉 + 直达详情</td><td><span class="tag ok">已实现</span></td><td>覆盖物质/药膳/状况/帖子</td></tr>
+    <tr><td>拍照鉴别（本地颜色分析）</td><td><span class="tag ok">已实现</span></td><td>取主色 → 候选 Top 8，全离线</td></tr>
+    <tr><td>特征逐项选择 + 实时候选</td><td><span class="tag ok">已实现</span></td><td>5 维度 chips，覆盖度打分</td></tr>
+    <tr><td>分龄剂量对照（成人/青少年）</td><td><span class="tag ok">已实现</span></td><td>物质详情、状况页、药膳页三处一致</td></tr>
+    <tr><td>单机社区（发帖/点赞/收藏/评论/导出）</td><td><span class="tag ok">已实现</span></td><td>导出 PNG 分享图 / TXT</td></tr>
+    <tr><td>备份 / 恢复 / 重置 / 偏好持久化</td><td><span class="tag ok">已实现</span></td><td>format id: qingyang-backup v1</td></tr>
+    <tr><td>安全口径与转义</td><td><span class="tag ok">已实现</span></td><td>测试含“不替代医生诊断”等关键词检查</td></tr>
+    <tr><td>首页 Hero 两大鉴别入口的主次与文案</td><td><span class="tag ok">已落地</span></td><td>拍照鉴别为大主按钮（46px），特征选择与看状况为同尺寸次按钮</td></tr>
+    <tr><td>识别候选结果的“确认”动作</td><td><span class="tag ok">已落地</span></td><td>候选卡加「就选这个 →」按钮，拍照与特征选择两处均有明确确认入口</td></tr>
+    <tr><td>状况页匹配的可解释性</td><td><span class="tag ok">已落地</span></td><td>标签改为「你提到「症状」→ 状况」，详情页顶部显示匹配理由</td></tr>
+    <tr><td>帖子卡片的信息密度</td><td><span class="tag ok">已落地</span></td><td>关联药膳名贴作者行，正文超 4 行折叠并支持「展开全文/收起」</td></tr>
+    <tr><td>离线表情包 / 默认头像多样性</td><td><span class="tag todo">建议</span></td><td>现有 SVG 插图已可用，可再补几种茶/羹类插图</td></tr>
+    <tr><td>“常用物质”收藏入口（首页）</td><td><span class="tag ok">已落地</span></td><td>首页右侧“常翻的物质”：按社区收藏 + 鉴别热度取前 6，与鉴别记录并列</td></tr>
+    <tr><td>导出分享图份量信息</td><td><span class="tag ok">已落地</span></td><td>分享图在关联药膳块下方增加“成人份量 / 青少年份量”两行小字</td></tr>
+    <tr><td>剂量语义色一致性</td><td><span class="tag ok">已落地</span></td><td>蓝·成人 / 琥珀·青少年 统一：dose 标签、dose-card、dose-box 三处一致</td></tr>
+    <tr><td>体质自评问卷（全面版）</td><td><span class="tag todo">超出 v1</span></td><td>已明确不在第一版范围，保持“自述症状”方式</td></tr>
+  </table>
+</section>
+
+<!-- ================= 六、调整建议 ================= -->
+<section id="next">
+  <h2 class="sec">六、本轮设计调整建议（可执行清单）</h2>
+  <div class="card">
+    <ol style="margin:0;padding-left:20px">
+      <li><span class="pill g">✓ 已落地</span> <b>首页 Hero 主次</b>：把“拍照鉴别”做成大按钮（第一行动），特征选择做成同尺寸次按钮并排。</li>
+      <li><span class="pill g">✓ 已落地</span> <b>识别候选确认</b>：候选卡片右下角加“就选这个 →”按钮；顶部提示“照片只参考颜色，请按特征核对实物”。</li>
+      <li><span class="pill g">✓ 已落地</span> <b>状况匹配理由</b>：命中后显示“你提到…所以推荐…”小标签，增加可信度。</li>
+      <li><span class="pill g">✓ 已落地</span> <b>帖子卡片</b>：正文最长显示约 4 行（带“展开全文/收起”），关联药膳名以标签形式贴在作者行。</li>
+      <li><span class="pill g">✓ 已落地</span> <b>首页“常用物质”栏</b>：按社区收藏 + 鉴别热度取前 6 个物质，与“鉴别记录”并列。</li>
+      <li><span class="pill g">✓ 已落地</span> <b>导出分享图版式</b>：加入“成人/青少年份量”两行小字。</li>
+      <li><span class="pill g">✓ 已落地</span> <b>一致性</b>：dose 标签、dose-card、dose-box 统一“蓝·成人 / 琥珀·青少年”语义色。</li>
+    </ol>
+    <p class="note" style="margin-top:14px">以上全部在本机、零依赖范围内落地，不涉及网络、云、模型。改动后已通过数据自测（511 项）与浏览器端到端回归（49 项）。</p>
+  </div>
+</section>
+
+</main>
+
+<footer>青养 · 页面结构与交互设计 · 本机离线文档 · 打开 index.html 即可体验当前实现</footer>
+</body>
+</html>

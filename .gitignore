@@ -11,6 +11,9 @@ scripts/e2e/report.json
 *.log
 *.tmp
 
+# 运行时二进制（本机复制，不应入库）
+runtime/
+
 # 系统文件
 Thumbs.db
 Desktop.ini

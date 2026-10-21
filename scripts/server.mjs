@@ -102,7 +102,14 @@ function openBrowser(url) {
     : process.platform === 'darwin'
       ? `open "${url}"`
       : `xdg-open "${url}"`;
-  exec(cmd, () => {});
+  try {
+    exec(cmd, (err) => {
+      if (err) console.log(`  （未能自动打开浏览器，请手动访问 ${url}）`);
+    });
+  } catch {
+    // 受限环境/无默认浏览器：spawn 同步失败时不崩溃，提示手动访问
+    console.log(`  （未能自动打开浏览器，请手动访问 ${url}）`);
+  }
 }
 
 server.on('error', (err) => {

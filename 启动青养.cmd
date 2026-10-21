@@ -1,23 +1,26 @@
 @echo off
 chcp 65001 >nul
-title é’å…» Â· é£Ÿç–—å¥åº·ç”Ÿæ´»
+title ÇàÑø ¡¤ Ê³ÁÆ½¡¿µÉú»î
 cd /d "%~dp0"
 
 set "NODE_EXE="
 where node >nul 2>nul && set "NODE_EXE=node"
 if not defined NODE_EXE if exist "%~dp0runtime\node.exe" set "NODE_EXE=%~dp0runtime\node.exe"
+if not defined NODE_EXE if exist "%USERPROFILE%\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\node\bin\node.exe" set "NODE_EXE=%USERPROFILE%\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\node\bin\node.exe"
+if not defined NODE_EXE if exist "C:\Program Files\nodejs\node.exe" set "NODE_EXE=C:\Program Files\nodejs\node.exe"
 
 if not defined NODE_EXE (
   echo.
-  echo   [æœªæ‰¾åˆ° Node.js] æ— æ³•å¯åŠ¨æœ¬åœ°æœåŠ¡ã€‚
-  echo   è¯·å®‰è£… Node.js åé‡è¯•ï¼Œæˆ–ç›´æ¥åŒå‡» index.html ä½¿ç”¨ç¦»çº¿æ¨¡å¼ã€‚
+  echo   [Î´ÕÒµ½ Node.js] ÎŞ·¨Æô¶¯±¾µØ·şÎñ¡£
+  echo   ¿ÉÖ±½ÓË«»÷ index.html ´ò¿ª£¨ÎŞÉçÇøÓë±£´æ¹¦ÄÜ£©¡£
   echo.
   pause
   exit /b 1
 )
 
 echo.
-echo   æ­£åœ¨å¯åŠ¨é’å…» Â· é£Ÿç–—å¥åº·ç”Ÿæ´» ...
-"%NODE_EXE%" "scripts\server.mjs" %*
+echo   ÕıÔÚÆô¶¯ÇàÑø ¡¤ Ê³ÁÆ½¡¿µÉú»î ...
+"%NODE_EXE%" "scripts\server.mjs"
 echo.
+echo   [ÒÑ¹Ø±Õ] ÇàÑøÒÑÍ£Ö¹·şÎñ¡£
 pause

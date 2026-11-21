@@ -188,6 +188,18 @@ section('购物清单导出');
   ok('css 有清单样式', /\.shop-list/.test(css));
 }
 
+// ---------- 1.11 启动体验（无黑窗口） ----------
+section('启动体验（无黑窗口）');
+{
+  ok('存在无窗口启动器 vbs', fs.existsSync(path.join(ROOT, '启动青养.vbs')));
+  const vbs = fs.readFileSync(path.join(ROOT, '启动青养.vbs'), 'utf8');
+  ok('vbs 用 WScript 隐藏窗口启动', vbs.includes('WScript.Shell') && vbs.includes(', 0, False'));
+  ok('vbs 指向本地服务器', vbs.includes('server.mjs') && vbs.includes('runtime\\node.exe'));
+  ok('保留 cmd 启动方式', fs.existsSync(path.join(ROOT, '启动青养.cmd')));
+  const cmdStr = fs.readFileSync(path.join(ROOT, '启动青养.cmd')).toString('latin1');
+  ok('cmd 提示静默启动', cmdStr.includes('vbs'));
+}
+
 // ---------- 2. 内容数据 ----------
 section('内容数据');
 const substances = (await import(pathToFileURL(path.join(ROOT, 'js/data/substances.js')).href)).SUBSTANCES;

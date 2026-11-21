@@ -1,6 +1,7 @@
 @echo off
 chcp 65001 >nul
 title 青养 · 食疗健康生活
+rem 想无黑窗口启动？请双击「启动青养.vbs」（静默后台运行，不显示本窗口）
 cd /d "%~dp0"
 
 set "NODE_EXE="

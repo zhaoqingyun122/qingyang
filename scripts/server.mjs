@@ -20,10 +20,13 @@ const MIME = {
   '.svg': 'image/svg+xml',
   '.md': 'text/markdown; charset=utf-8',
   '.txt': 'text/plain; charset=utf-8',
+  '.png': 'image/png',
+  '.webp': 'image/webp',
+  '.ico': 'image/x-icon',
 };
 
 // 只对外提供网页运行所需的静态资源类型
-const SAFE_EXT = new Set(['.html', '.js', '.mjs', '.css', '.json', '.svg', '.md', '.txt']);
+const SAFE_EXT = new Set(['.html', '.js', '.mjs', '.css', '.json', '.svg', '.md', '.txt', '.png', '.webp', '.ico']);
 
 function argValue(flag) {
   const i = process.argv.indexOf(flag);

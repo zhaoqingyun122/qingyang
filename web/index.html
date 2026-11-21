@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#5f8f5b" />
 <title>青养 · 食疗健康生活</title>
+<link rel="manifest" href="./manifest.json" />
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png" />
+<link rel="apple-touch-icon" href="./assets/icons/icon-192.png" />
 <link rel="stylesheet" href="./css/app.css" />
 </head>
 <body>
@@ -50,5 +54,13 @@
   <div id="toast-root" class="toast-root"></div>
 
   <script type="module" src="./js/main.js"></script>
+  <script>
+    // PWA：注册 Service Worker（网络可用时优先取新，离线回退缓存）
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').catch(function () {});
+      });
+    }
+  </script>
 </body>
 </html>

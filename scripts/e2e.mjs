@@ -44,7 +44,8 @@ async function main() {
   for (let i = 0; i < 60; i += 1) {
     try {
       const list = await getTargets();
-      target = list.find((t) => t.type === 'page');
+      target = list.find((t) => t.type === 'page' && /^https?:/.test(t.url))
+        || list.find((t) => t.type === 'page');
       if (target) break;
     } catch {
       /* retry */
@@ -156,8 +157,18 @@ async function main() {
   await send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
 
   // 每次运行先整页强制刷新，确保加载最新模块代码（ES 模块只在页面加载时拉取一次，hash 导航不会重载）
+  // 先显式导航到本应用，避免浏览器停留在 about:blank / edge:// 内置页导致断言失效
+  await send('Page.navigate', { url: BASE });
+  const navWait = Date.now();
+  while (Date.now() - navWait < 8000) {
+    const href = await evaluate(`location.href`);
+    if (typeof href.value === 'string' && href.value.startsWith(BASE)) break;
+    await new Promise((r) => setTimeout(r, 250));
+  }
   await send('Page.reload', { ignoreCache: true });
   await new Promise((r) => setTimeout(r, 1500));
+  // 丢弃导航前浏览器内置页（如 edge:// 同步确认页）产生的噪声错误
+  consoleErrors.length = 0;
 
   if (want('首页')) {
   console.log('\n[首页]');
@@ -552,6 +563,39 @@ async function main() {
   const persisted = await evaluate(`document.querySelector('#set-density')?.value`);
   ok('偏好设置刷新后保留', persisted.value === 'compact', JSON.stringify(persisted));
   await evaluate(`(() => { const s=document.querySelector('#set-density'); s.value='comfortable'; s.dispatchEvent(new Event('change',{bubbles:true})); return 1; })()`);
+  }
+
+  if (want('PWA')) {
+  console.log('\n[PWA 安装化]');
+  const mfLink = await evaluate(`document.querySelector('link[rel="manifest"]')?.getAttribute('href') || ''`);
+  ok('页面引用 manifest', mfLink.value.includes('manifest'), JSON.stringify(mfLink));
+  const mf = await evaluate(`(async () => {
+    try {
+      const r = await fetch('./manifest.json');
+      const j = await r.json();
+      return { name: j.name || '', icons: (j.icons || []).length, display: j.display, start: j.start_url };
+    } catch (e) { return { err: String(e) }; }
+  })()`);
+  ok('manifest 可获取且名称含青养', !!mf.value?.name && mf.value.name.includes('青养'), JSON.stringify(mf));
+  ok('manifest 图标 ≥ 2', (mf.value?.icons || 0) >= 2, JSON.stringify(mf));
+  ok('manifest standalone 应用模式', mf.value?.display === 'standalone', JSON.stringify(mf));
+  const sw = await evaluate(`(async () => {
+    if (!('serviceWorker' in navigator)) return { no: true };
+    const reg = await navigator.serviceWorker.getRegistration();
+    return { reg: !!reg, scope: reg?.scope || '' };
+  })()`);
+  ok('Service Worker 已注册', sw.value?.reg === true, JSON.stringify(sw));
+  await new Promise((r) => setTimeout(r, 1200));
+  const ctl = await evaluate(`(async () => {
+    const c = navigator.serviceWorker?.controller;
+    if (c) return c.scriptURL;
+    const reg = await navigator.serviceWorker.getRegistration();
+    return reg ? 'registered-not-controlled' : 'none';
+  })()`);
+  ok('SW 接管或注册就绪', ctl.value === 'registered-not-controlled' || ctl.value?.includes('sw.js'), JSON.stringify(ctl));
+  const theme = await evaluate(`document.querySelector('meta[name="theme-color"]')?.content || ''`);
+  ok('有主题色 meta', theme.value === '#5f8f5b', JSON.stringify(theme));
+  await shot('14-pwa');
   }
 
   console.log('\n[错误检查]');

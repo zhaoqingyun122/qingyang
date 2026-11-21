@@ -60,7 +60,7 @@ const jsFiles = [
   'views/community.js',
   'views/data.js',
 ];
-const allFiles = ['index.html', 'css/app.css', 'scripts/server.mjs', ...jsFiles.map((f) => 'js/' + f)];
+const allFiles = ['index.html', 'css/app.css', 'manifest.json', 'sw.js', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'scripts/server.mjs', ...jsFiles.map((f) => 'js/' + f)];
 
 for (const f of allFiles) {
   const abs = path.join(ROOT, f);
@@ -78,6 +78,33 @@ for (const f of allFiles) {
       const target = path.resolve(dir, spec);
       ok(`导入存在 ${f} -> ${spec}`, fs.existsSync(target), target);
     }
+  }
+}
+
+// ---------- 1.5 PWA 配置 ----------
+section('PWA 配置');
+{
+  const indexHtml = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  ok('index.html 引用 manifest', /rel="manifest"/.test(indexHtml));
+  ok('index.html 注册 service worker', /serviceWorker\.register/.test(indexHtml));
+  ok('index.html 有主题色', /theme-color/.test(indexHtml));
+  try {
+    const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'manifest.json'), 'utf8'));
+    ok('manifest 名称含青养', String(manifest.name).includes('青养'));
+    ok('manifest 有 start_url 与 standalone', manifest.start_url === './' && manifest.display === 'standalone');
+    ok('manifest 图标 >= 2', (manifest.icons || []).length >= 2, String((manifest.icons || []).length));
+    const iconRefs = (manifest.icons || []).map((i) => i.src);
+    for (const ref of iconRefs) {
+      ok(`manifest 图标文件存在 ${ref}`, fs.existsSync(path.join(ROOT, ref)), path.join(ROOT, ref));
+    }
+  } catch (err) {
+    ok('manifest JSON 可解析', false, String(err));
+  }
+  const sw = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
+  ok('sw 有 install/activate/fetch', !!(sw.includes('install') && sw.includes('activate') && sw.includes('fetch')));
+  ok('sw 使用 network-first', /fetch\(req\)/.test(sw) && /caches\.match/.test(sw));
+  for (const f of ['web/manifest.json', 'web/sw.js', 'web/assets/icons/icon-192.png', 'web/assets/icons/icon-512.png']) {
+    ok(`发布副本存在 ${f}`, fs.existsSync(path.join(ROOT, f)));
   }
 }
 

@@ -125,6 +125,20 @@ section('深色模式');
   ok('css 深色覆盖 medical/tea', /body\.dark \.medical-card/.test(css) && /body\.dark \.tea-card/.test(css));
 }
 
+// ---------- 1.7 字号调节 ----------
+section('字号调节');
+{
+  const storeSrc = fs.readFileSync(path.join(ROOT, 'js/lib/store.js'), 'utf8');
+  const dataSrc = fs.readFileSync(path.join(ROOT, 'js/views/data.js'), 'utf8');
+  const mainSrc = fs.readFileSync(path.join(ROOT, 'js/main.js'), 'utf8');
+  const css = fs.readFileSync(path.join(ROOT, 'css/app.css'), 'utf8');
+  ok('默认设置含 textSize=std', /textSize: 'std'/.test(storeSrc));
+  ok('数据页有字号选择器', /set-text-size/.test(dataSrc) && /特大/.test(dataSrc));
+  ok('切换字号持久化设置', /updateSettings\(\{ textSize: e\.target\.value \}\)/.test(dataSrc));
+  ok('main 应用字号类', /classList\.remove\('size-lg', 'size-xl'\)/.test(mainSrc) && /classList\.add\('size-xl'\)/.test(mainSrc));
+  ok('css 有 size-lg/size-xl 缩放', /body\.size-lg/.test(css) && /body\.size-xl/.test(css));
+}
+
 // ---------- 2. 内容数据 ----------
 section('内容数据');
 const substances = (await import(pathToFileURL(path.join(ROOT, 'js/data/substances.js')).href)).SUBSTANCES;

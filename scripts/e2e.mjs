@@ -626,6 +626,26 @@ async function main() {
   ok('可切回浅色', off.value === false, JSON.stringify(off));
   }
 
+  if (want('字号')) {
+  console.log('\n[字号调节]');
+  await goto('/data', 900);
+  await evaluate(`(() => { const s = document.querySelector('#set-text-size'); if (s) { s.value = 'xl'; s.dispatchEvent(new Event('change', { bubbles: true })); } return 1; })()`);
+  await new Promise((r) => setTimeout(r, 700));
+  const xlOn = await evaluate(`document.body.classList.contains('size-xl')`);
+  const metaSize = await evaluate(`(async () => { const { store } = await import('./js/lib/store.js'); return store.settings.textSize; })()`);
+  ok('切换到特大后 body.size-xl 生效', xlOn.value === true, JSON.stringify(xlOn));
+  ok('textSize 已写入设置', metaSize.value === 'xl', JSON.stringify(metaSize));
+  await send('Page.reload', {});
+  await new Promise((r) => setTimeout(r, 1200));
+  const kept = await evaluate(`document.body.classList.contains('size-xl')`);
+  ok('刷新后特大保留', kept.value === true, JSON.stringify(kept));
+  await goto('/data', 900);
+  await evaluate(`(() => { const s = document.querySelector('#set-text-size'); if (s) { s.value = 'std'; s.dispatchEvent(new Event('change', { bubbles: true })); } return 1; })()`);
+  await new Promise((r) => setTimeout(r, 600));
+  const back = await evaluate(`document.body.classList.contains('size-xl')`);
+  ok('可切回标准字号', back.value === false, JSON.stringify(back));
+  }
+
   console.log('\n[错误检查]');
   const errs = consoleErrors.filter((e) => !/favicon|Download the React/i.test(e));
   ok('全流程无 JS 运行时异常', errs.length === 0, errs.slice(0, 5).join(' | '));

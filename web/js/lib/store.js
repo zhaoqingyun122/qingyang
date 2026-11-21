@@ -8,6 +8,7 @@ const DEFAULT_SETTINGS = {
   homeSort: 'category', // category | pinyin
   safeNotice: true, // 详情页显示安全提示
   darkMode: false, // 深色模式（夜间护眼）
+  textSize: 'std', // std | lg | xl 文字大小
 };
 
 class Store extends EventTarget {

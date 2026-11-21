@@ -564,3 +564,11 @@ body.dark .danger-zone { border-color: #4a3533; background: #2a201f; }
 body.dark .medical-card { background: #2c201c; border-color: #4a352c; border-left-color: #c2493a; }
 body.dark .tea-card { border-left-color: #c98a1b; }
 body.dark .toast { background: rgba(20, 24, 20, 0.94); }
+
+/* ================= 字号调节（设置页开关，body.size-*） ================= */
+body.size-lg { zoom: 1.08; }
+body.size-xl { zoom: 1.2; }
+@supports not (zoom: 1) {
+  body.size-lg { font-size: 16.5px; }
+  body.size-xl { font-size: 18px; }
+}

@@ -744,6 +744,9 @@ async function main() {
     return r.id;
   })()`);
   ok('已收藏一道药膳', typeof rid.value === 'string' && rid.value.length > 0, JSON.stringify(rid));
+  // 页面可能正停在首页（上组遗留），hash 不变不会重渲染 → 整页刷新纳入新收藏
+  await send('Page.reload', {});
+  await new Promise((r) => setTimeout(r, 1500));
   await goto('/', 1000);
   const shopBtn = await evaluate(`document.querySelector('#shopping-btn')?.textContent || ''`);
   ok('食谱本出现导出清单按钮', shopBtn.value.includes('购物清单'), JSON.stringify(shopBtn.value));

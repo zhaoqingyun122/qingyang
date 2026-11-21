@@ -771,6 +771,32 @@ async function main() {
   await shot('18-shopping');
 }
 
+  if (want('引导')) {
+  console.log('\n[新用户引导]');
+  // 先把标记清掉，模拟第一次打开
+  await evaluate(`(async () => { const { db } = await import('./js/lib/db.js'); try { await db.setMeta('onboarded', false); } catch {} return 1; })()`);
+  await send('Page.reload', {});
+  await new Promise((r) => setTimeout(r, 1600));
+  await goto('/', 1000);
+  const shown = await evaluate(`!!document.querySelector('.onboard-mask')`);
+  ok('首次打开显示引导层', shown.value === true, JSON.stringify(shown));
+  const hasClose = await evaluate(`!!document.querySelector('#onboard-close')`);
+  ok('引导层有关闭按钮', hasClose.value === true, JSON.stringify(hasClose));
+  const mods = await evaluate(`document.querySelectorAll('.onboard-item').length`);
+  ok('引导层介绍四个模块', mods.value === 4, JSON.stringify(mods));
+  await evaluate(`document.querySelector('#onboard-close')?.click()`);
+  await new Promise((r) => setTimeout(r, 500));
+  const gone = await evaluate(`!!document.querySelector('.onboard-mask')`);
+  ok('点击后引导层消失', gone.value === false, JSON.stringify(gone));
+  // 刷新后不再显示
+  await send('Page.reload', {});
+  await new Promise((r) => setTimeout(r, 1600));
+  await goto('/', 1000);
+  const again = await evaluate(`!!document.querySelector('.onboard-mask')`);
+  ok('刷新后不再显示引导', again.value === false, JSON.stringify(again));
+  await shot('19-onboard');
+}
+
   console.log('\n[错误检查]');
   const errs = consoleErrors.filter((e) => !/favicon|Download the React/i.test(e));
   ok('全流程无 JS 运行时异常', errs.length === 0, errs.slice(0, 5).join(' | '));

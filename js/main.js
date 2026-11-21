@@ -7,6 +7,7 @@ import { CONDITIONS } from './data/conditions.js';
 import { RECIPES } from './data/recipes.js';
 import { esc, qs } from './lib/dom.js';
 import { render, mountRouter } from './router.js';
+import { maybeShowOnboard } from './onboard.js';
 
 const view = qs('#view');
 
@@ -69,6 +70,9 @@ async function boot() {
   mountRouter();
   window.addEventListener('hashchange', render);
   render();
+
+  // 新用户引导（仅首次显示）
+  maybeShowOnboard();
 }
 
 boot();

@@ -609,3 +609,24 @@ button.link-btn:hover { color: var(--green); }
 .shop-list li b { color: var(--green-d); }
 .shop-list li div { margin: 2px 0; }
 .shop-list .row-actions { margin-top: 14px; }
+
+/* ================= 新用户引导 ================= */
+.onboard-mask {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(10, 14, 10, 0.45);
+  display: flex; align-items: center; justify-content: center; padding: 18px;
+  animation: fadeIn .2s ease;
+}
+.onboard {
+  background: var(--card); color: var(--ink);
+  border-radius: 16px; border: 1px solid var(--line);
+  box-shadow: var(--shadow); max-width: 620px; width: 100%;
+  padding: 22px 24px; box-sizing: border-box;
+}
+.onboard h2 { margin: 0 0 8px; color: var(--green-d); }
+.onboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+.onboard-item { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--bg); }
+.onboard-item b { display: block; margin-bottom: 4px; color: var(--green-d); }
+.onboard-item span { font-size: 13px; color: var(--ink-2); }
+#onboard-close { width: 100%; }
+body.dark .onboard-item { background: var(--bg); }

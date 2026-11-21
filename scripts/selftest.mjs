@@ -200,6 +200,21 @@ section('启动体验（无黑窗口）');
   ok('cmd 提示静默启动', cmdStr.includes('vbs'));
 }
 
+// ---------- 1.12 新用户引导 ----------
+section('新用户引导');
+{
+  const onbPath = path.join(ROOT, 'js/onboard.js');
+  ok('存在引导模块', fs.existsSync(onbPath));
+  const onb = fs.readFileSync(onbPath, 'utf8');
+  const mainSrc = fs.readFileSync(path.join(ROOT, 'js/main.js'), 'utf8');
+  const css = fs.readFileSync(path.join(ROOT, 'css/app.css'), 'utf8');
+  ok('引导覆盖四个模块', (onb.match(/icon:/g) || []).length === 4);
+  ok('看过一次后不再显示', onb.includes("getMeta('onboarded'") && onb.includes("setMeta('onboarded', true)"));
+  ok('有关闭按钮', onb.includes('#onboard-close') && onb.includes('开始使用'));
+  ok('main 引入并调用引导', /import \{ maybeShowOnboard \} from '\.\/onboard\.js'/.test(mainSrc) && /maybeShowOnboard\(\)/.test(mainSrc));
+  ok('css 有引导样式', /\.onboard-mask/.test(css) && /\.onboard-grid/.test(css));
+}
+
 // ---------- 2. 内容数据 ----------
 section('内容数据');
 const substances = (await import(pathToFileURL(path.join(ROOT, 'js/data/substances.js')).href)).SUBSTANCES;

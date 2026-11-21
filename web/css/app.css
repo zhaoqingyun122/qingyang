@@ -585,3 +585,20 @@ body.size-xl { zoom: 1.2; }
 .fav-sm { padding: 3px 9px; font-size: 12px; }
 .tea-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 body.dark .fav-btn { background: var(--card); }
+
+/* ================= 每日调理打卡 ================= */
+.checkin-strip { display: grid; grid-template-columns: repeat(14, 1fr); gap: 6px; margin: 12px 0 14px; }
+.checkin-cell { border: 1px solid var(--line); border-radius: 10px; text-align: center; padding: 6px 0 4px; background: var(--card); transition: .18s; }
+.checkin-cell em { display: block; font-style: normal; font-size: 11px; color: var(--ink-3); }
+.checkin-cell b { font-size: 14px; color: var(--ink-2); }
+.checkin-cell.on { background: var(--green-l); border-color: var(--green); }
+.checkin-cell.on b { color: var(--green-d); }
+.checkin-cell.today { border-color: var(--green); box-shadow: 0 0 0 2px var(--green-l); }
+.checkin-today { border-left: 3px solid var(--green); background: var(--green-l); border-radius: 0 10px 10px 0; padding: 10px 14px; }
+.checkin-today b { color: var(--green-d); }
+.checkin-note { display: flex; gap: 8px; margin: 8px 0; }
+.checkin-note .input { flex: 1; }
+.checkin-recent { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.link-btn { border: none; background: none; color: var(--green-d); cursor: pointer; font: inherit; padding: 0; text-decoration: underline; }
+button.link-btn:hover { color: var(--green); }
+.checkin-today.on { background: var(--green-l); }

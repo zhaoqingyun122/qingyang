@@ -205,6 +205,7 @@ function bind(view) {
           settings: pendingRestore.settings,
           posts: pendingRestore.posts,
           identifications: pendingRestore.identifications,
+          checkins: pendingRestore.checkins,
           favorites: pendingRestore.favorites,
         });
         pendingRestore = null;

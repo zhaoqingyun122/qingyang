@@ -2,8 +2,8 @@
 // 所有数据都在本机浏览器内，不联网。
 
 const DB_NAME = 'qingyang';
-const DB_VERSION = 1;
-const STORES = ['meta', 'posts', 'identifications'];
+const DB_VERSION = 2;
+const STORES = ['meta', 'posts', 'identifications', 'checkins'];
 
 let dbPromise = null;
 let usingFallback = false;
@@ -23,6 +23,10 @@ function openDB() {
       if (!db.objectStoreNames.contains('identifications')) {
         const s = db.createObjectStore('identifications', { keyPath: 'id' });
         s.createIndex('createdAt', 'createdAt');
+      }
+      if (!db.objectStoreNames.contains('checkins')) {
+        const s = db.createObjectStore('checkins', { keyPath: 'id' });
+        s.createIndex('date', 'date');
       }
     };
     req.onsuccess = () => resolve(req.result);

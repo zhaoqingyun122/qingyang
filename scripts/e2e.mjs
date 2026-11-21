@@ -692,6 +692,48 @@ async function main() {
   await shot('16-favorites');
   }
 
+  if (want('打卡')) {
+  console.log('\n[饮食打卡]');
+  await goto('/', 1000);
+  const hasPanel = await evaluate(`document.body.textContent.includes('每日调理打卡')`);
+  ok('首页有打卡面板', hasPanel.value === true, JSON.stringify(hasPanel));
+  const btn0 = await evaluate(`document.querySelector('#checkin-btn')?.textContent || ''`);
+  ok('有打卡按钮', btn0.value.length > 0, JSON.stringify(btn0));
+  await evaluate(`document.querySelector('#checkin-btn')?.click()`);
+  await new Promise((r) => setTimeout(r, 850));
+  const after = await evaluate(`(() => {
+    const b = document.querySelector('#checkin-btn');
+    return { txt: b?.textContent || '', onCells: document.querySelectorAll('.checkin-cell.on').length, note: !!document.querySelector('#checkin-note') };
+  })()`);
+  ok('打卡成功后按钮变已打卡', (after.value?.txt || '').includes('已打卡'), JSON.stringify(after.value?.txt));
+  ok('今天日历格点亮', (after.value?.onCells || 0) >= 1, JSON.stringify(after.value?.onCells));
+  ok('出现备注输入框', after.value?.note === true, JSON.stringify(JSON.stringify(after.value?.note)));
+  await evaluate(`(() => { const n = document.querySelector('#checkin-note'); if (n) n.value = '早餐山药小米粥，精神不错'; document.querySelector('#checkin-save-note')?.click(); })()`);
+  await new Promise((r) => setTimeout(r, 850));
+  const noteKept = await evaluate(`document.querySelector('#checkin-note')?.value || ''`);
+  ok('备注保存保留', noteKept.value.includes('山药'), JSON.stringify(noteKept.value));
+  // 刷新保留
+  await send('Page.reload', {});
+  await new Promise((r) => setTimeout(r, 1500));
+  await goto('/', 1000);
+  const kept = await evaluate(`(() => ({
+    onCells: document.querySelectorAll('.checkin-cell.on').length,
+    note: document.querySelector('#checkin-note')?.value || '',
+    btn: document.querySelector('#checkin-btn')?.textContent || '',
+  }))()`);
+  ok('刷新后打卡保留', (kept.value?.onCells || 0) >= 1, JSON.stringify(kept.value?.onCells));
+  ok('刷新后备注保留', (kept.value?.note || '').includes('山药'), JSON.stringify(kept.value?.note));
+  // 删除
+  await evaluate(`document.querySelector('#checkin-del')?.click()`);
+  await new Promise((r) => setTimeout(r, 850));
+  const gone = await evaluate(`(() => ({
+    onCells: document.querySelectorAll('.checkin-cell.on').length,
+    btn: document.querySelector('#checkin-btn')?.textContent || '',
+  }))()`);
+  ok('删除后恢复未打卡', (gone.value?.onCells || 0) === 0 && (gone.value?.btn || '').includes('打卡') && !(gone.value?.btn || '').includes('已打卡'), JSON.stringify(gone.value));
+  await shot('17-checkin');
+}
+
   console.log('\n[错误检查]');
   const errs = consoleErrors.filter((e) => !/favicon|Download the React/i.test(e));
   ok('全流程无 JS 运行时异常', errs.length === 0, errs.slice(0, 5).join(' | '));

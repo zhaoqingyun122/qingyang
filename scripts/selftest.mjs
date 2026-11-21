@@ -158,6 +158,23 @@ section('收藏与食谱本');
   ok('css 有收藏按钮样式', /\.fav-btn/.test(css) && /\.fav-sm/.test(css));
 }
 
+// ---------- 1.9 打卡与调理记录 ----------
+section('打卡与调理记录');
+{
+  const dbSrc = fs.readFileSync(path.join(ROOT, 'js/lib/db.js'), 'utf8');
+  const storeSrc = fs.readFileSync(path.join(ROOT, 'js/lib/store.js'), 'utf8');
+  const backupSrc = fs.readFileSync(path.join(ROOT, 'js/lib/backup.js'), 'utf8');
+  const homeSrc = fs.readFileSync(path.join(ROOT, 'js/views/home.js'), 'utf8');
+  const css = fs.readFileSync(path.join(ROOT, 'css/app.css'), 'utf8');
+  ok('db 建 checkins 表（版本2）', /DB_VERSION = 2/.test(dbSrc) && /createObjectStore\('checkins'/.test(dbSrc));
+  ok('store 初始化打卡数据', /this\.checkins = \[\]/.test(storeSrc) && /db\.all\('checkins'\)/.test(storeSrc));
+  ok('store 提供打卡方法', /async addCheckin\(rec\)/.test(storeSrc) && /async removeCheckin\(id\)/.test(storeSrc) && /checkinsOfDate\(date\)/.test(storeSrc));
+  ok('备份包含打卡', /checkins: store\.checkins/.test(backupSrc) && /Array\.isArray\(d\.checkins\)/.test(backupSrc));
+  ok('首页有打卡面板', /checkinSection/.test(homeSrc) && /每日调理打卡/.test(homeSrc));
+  ok('打卡交互绑定完整', /checkin-save-note/.test(homeSrc) && /checkin-del/.test(homeSrc));
+  ok('css 有打卡样式', /\.checkin-strip/.test(css) && /\.checkin-cell/.test(css));
+}
+
 // ---------- 2. 内容数据 ----------
 section('内容数据');
 const substances = (await import(pathToFileURL(path.join(ROOT, 'js/data/substances.js')).href)).SUBSTANCES;

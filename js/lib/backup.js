@@ -20,6 +20,7 @@ export async function buildBackup(store) {
       visitors: store.visitors,
       posts: store.posts,
       identifications: store.identifications.map((r) => ({ ...r })),
+      checkins: store.checkins,
       favorites: [...store.favorites],
     },
   };
@@ -34,11 +35,13 @@ export function validateBackup(obj) {
   if (d.posts && !Array.isArray(d.posts)) throw new Error('posts 字段格式错误');
   if (d.identifications && !Array.isArray(d.identifications)) throw new Error('identifications 字段格式错误');
   if (d.visitors && !Array.isArray(d.visitors)) throw new Error('visitors 字段格式错误');
+  if (d.checkins && !Array.isArray(d.checkins)) throw new Error('checkins 字段格式错误');
   return {
     posts: d.posts || [],
     identifications: d.identifications || [],
     visitors: d.visitors || [],
     settings: d.settings && typeof d.settings === 'object' ? d.settings : null,
+    checkins: Array.isArray(d.checkins) ? d.checkins : [],
     favorites: Array.isArray(d.favorites) ? d.favorites : [],
     exportedAt: obj.exportedAt,
   };
@@ -47,7 +50,7 @@ export function validateBackup(obj) {
 /** 备份摘要（用于恢复前向用户说明） */
 export function summarizeBackup(b) {
   return `导出时间：${b.exportedAt ? new Date(b.exportedAt).toLocaleString('zh-CN') : '未知'}
-帖子 ${b.posts.length} 条、鉴别记录 ${b.identifications.length} 条、访客身份 ${b.visitors.length} 个`;
+帖子 ${b.posts.length} 条、鉴别记录 ${b.identifications.length} 条、访客身份 ${b.visitors.length} 个、打卡 ${b.checkins.length} 条、收藏 ${b.favorites.length} 项`;
 }
 
 export async function fileCounts() {

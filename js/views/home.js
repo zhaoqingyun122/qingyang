@@ -53,6 +53,61 @@ function filterList() {
  * 首页「常翻的物质」：按“社区帖子被收藏的次数 + 鉴别记录确认次数”综合热度取前 6。
  * 没有收藏/鉴别记录时返回空数组，界面给引导文案。
  */
+const fmtDay = (dt) => {
+  const p = (n) => String(n).padStart(2, '0');
+  return `${dt.getFullYear()}-${p(dt.getMonth() + 1)}-${p(dt.getDate())}`;
+};
+
+// 最近 14 天（含今天），用于打卡日历条
+function lastNDays() {
+  const now = new Date();
+  const out = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+    out.push({ date: fmtDay(d), day: d.getDate(), dow: '日一二三四五六'[d.getDay()], today: i === 0 });
+  }
+  return out;
+}
+
+// 「每日调理打卡」：今天打卡按钮 + 最近 14 天日历条 + 当天备注
+function checkinSection() {
+  const today = fmtDay(new Date());
+  const dates = new Set(store.checkinDates());
+  const todayRecs = store.checkinsOfDate(today);
+  const done = todayRecs.length > 0;
+  const recent = store.checkins.filter((c) => c.date !== today).slice(0, 6);
+  return `<section class="panel">
+    <div class="panel-head">
+      <h2>每日调理打卡</h2>
+      <button class="btn btn-sm ${done ? 'btn-ghost' : 'btn-primary'}" id="checkin-btn" ${done ? 'disabled' : ''}>${done ? '✓ 今天已打卡' : '＋ 今天打卡'}</button>
+    </div>
+    <div class="checkin-strip">
+      ${lastNDays()
+        .map(
+          (c) => `<div class="checkin-cell ${dates.has(c.date) ? 'on' : ''} ${c.today ? 'today' : ''}" data-cdate="${c.date}" title="${c.date}"><em>${c.dow}</em><b>${c.day}</b></div>`
+        )
+        .join('')}
+    </div>
+    <div class="checkin-today ${done ? 'on' : ''}">
+      ${
+        done
+          ? `<b>✓ 今天已打卡</b>
+             <div class="checkin-note">
+               <input class="input" id="checkin-note" placeholder="今天吃了什么？身体感觉如何（可选）" value="${esc(todayRecs[0].note || '')}" />
+               <button class="btn btn-sm btn-primary" id="checkin-save-note">保存备注</button>
+             </div>
+             <p class="small muted">打卡时间 ${new Date(todayRecs[0].createdAt).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })} · <button class="link-btn" id="checkin-del">删除今天的记录</button></p>`
+          : `<p class="muted small">点「＋ 今天打卡」记录每天的饮食或调理情况，坚持下来回看更有成就感。</p>`
+      }
+    </div>
+    ${
+      recent.length
+        ? `<div class="checkin-recent"><span class="muted small">最近打卡：</span>${recent.map((c) => `<span class="chip soft">${c.date.slice(5)}</span>`).join('')}</div>`
+        : ''
+    }
+  </section>`;
+}
+
 // 「我的食谱本」：在首页展示收藏的物质 / 药膳 / 茶饮（有收藏才显示）
 function favBookSection() {
   const favItems = [...store.favorites]
@@ -135,7 +190,7 @@ export function renderHome(view, { query }) {
       </div>
     </section>
 
-    ${favBookSection()}
+    ${favBookSection()}${checkinSection()}
 
     <section class="panel">
       <div class="panel-head">
@@ -256,6 +311,34 @@ export function renderHome(view, { query }) {
       renderHome(view, {});
     })
   );
+
+  // 每日调理打卡
+  const checkinBtn = qs('#checkin-btn', view);
+  if (checkinBtn) {
+    checkinBtn.addEventListener('click', async () => {
+      await store.addCheckin({ id: 'ck_' + Date.now().toString(36), date: fmtDay(new Date()), note: '', createdAt: Date.now() });
+      toast('已打卡，坚持就是胜利 🎉', 'ok');
+      renderHome(view, {});
+    });
+  }
+  const noteSave = qs('#checkin-save-note', view);
+  if (noteSave) {
+    noteSave.addEventListener('click', async () => {
+      const rec = store.checkinsOfDate(fmtDay(new Date()))[0];
+      if (!rec) return;
+      await store.addCheckin({ ...rec, note: qs('#checkin-note', view).value });
+      toast('备注已保存', 'ok');
+      renderHome(view, {});
+    });
+  }
+  const checkinDel = qs('#checkin-del', view);
+  if (checkinDel) {
+    checkinDel.addEventListener('click', async () => {
+      for (const r of store.checkinsOfDate(fmtDay(new Date()))) await store.removeCheckin(r.id);
+      toast('已删除今天的打卡', 'ok');
+      renderHome(view, {});
+    });
+  }
 }
 
 export function setHomeQuery(q) {

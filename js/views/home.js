@@ -1,6 +1,6 @@
 // 青养 · 首页：药食同源物质鉴别与百科
 import { store } from '../lib/store.js';
-import { esc, html, qs, qsa, toast } from '../lib/dom.js';
+import { esc, html, qs, qsa, toast, modal, downloadBlob } from '../lib/dom.js';
 import { CATEGORY_META } from '../lib/seed.js';
 import { searchAll } from '../lib/search.js';
 import { TEAS } from '../data/teas.js';
@@ -132,13 +132,109 @@ function favBookSection() {
     })
     .filter(Boolean);
   if (!favItems.length) return '';
+  const nRecipe = favItems.filter((f) => f.type === 'recipe').length;
   return `<section class="panel">
     <div class="panel-head">
       <h2>我的食谱本</h2>
       <span class="muted small">${favItems.length} 项收藏 · 详情页可随时取消</span>
     </div>
     <div class="tagbox">${favItems.map((f) => `<a class="tag" data-link href="${esc(f.href)}">${f.icon} ${esc(f.name)} <small>${esc(f.sub)}</small></a>`).join('')}</div>
+    ${nRecipe ? `<div class="row-actions"><button class="btn btn-sm btn-primary" id="shopping-btn">🛒 导出购物清单（${nRecipe} 道药膳）</button></div>` : ''}
   </section>`;
+}
+
+// 数字串求值：支持 '1/4' 这类分数写法
+function numVal(s) {
+  if (typeof s !== 'string') return 0;
+  if (s.includes('/')) {
+    const [a, b] = s.split('/').map(Number);
+    return a / (b || 1);
+  }
+  return Number(s) || 0;
+}
+
+// 汇总收藏药膳的用料 → 合并同类 → 生成购物清单文本
+function buildShoppingList() {
+  const favRecipes = [...store.favorites]
+    .filter((k) => k.startsWith('recipe:'))
+    .map((k) => store.recipe(k.slice(7)))
+    .filter(Boolean);
+  const groups = new Map();
+  for (const r of favRecipes) {
+    for (const ing of r.ingredients || []) {
+      const s = String(ing).trim();
+      if (!s || /^(沸水|清水|开水|水)/.test(s)) continue; // 水类不算购物项
+      const m = s.match(/^([\u4e00-\u9fa5A-Za-z（）()、·]+)/);
+      const key = m ? m[1].trim() : s;
+      if (!groups.has(key)) groups.set(key, { key, items: [], from: [] });
+      const g = groups.get(key);
+      g.items.push(s);
+      if (!g.from.includes(r.name)) g.from.push(r.name);
+    }
+  }
+  const rows = [...groups.values()].map((g) => {
+    const units = [...new Set(g.items.map((it) => { const mm = it.match(/([\d./]+)\s*([g克斤两毫升ml片枚粒勺包袋条个]+)/); return mm ? mm[2] : null; }).filter(Boolean))];
+    let total = null;
+    if (units.length === 1 && units[0]) {
+      let sum = 0;
+      let ok = true;
+      for (const it of g.items) {
+        const mm = it.match(/([\d./]+)\s*([g克斤两毫升ml片枚粒勺包袋条个]+)/);
+        if (!mm) { ok = false; break; }
+        sum += numVal(mm[1]);
+      }
+      if (ok) total = { sum: Math.round(sum * 100) / 100, unit: units[0] };
+    }
+    return { ...g, total };
+  }).sort((a, b) => a.key.localeCompare(b.key, 'zh-Hans-CN'));
+  const lines = ['青养 · 购物清单', `来自 ${favRecipes.length} 道收藏药膳，同一种用料已合并。`, ''];
+  for (const r of rows) {
+    const amount = r.total ? `${r.items.join('、')}（合计约 ${r.total.sum}${r.total.unit}）` : r.items.join('、');
+    lines.push(`□ ${r.key}：${amount}（出自 ${r.from.join('、')}）`);
+  }
+  lines.push('', '— 青养 app 自动生成');
+  return { favRecipes, rows, text: lines.join('\n') };
+}
+
+// 弹窗展示购物清单 + 复制 / 下载
+function openShoppingList() {
+  const list = buildShoppingList();
+  if (!list.favRecipes.length) {
+    toast('先把药膳收藏到食谱本，才能生成购物清单', 'warn');
+    return;
+  }
+  if (!list.rows.length) {
+    toast('收藏的药膳里没有可购买的用料', 'warn');
+    return;
+  }
+  const body = `<div class="shop-list">
+    <p class="small muted">合并自 ${list.favRecipes.length} 道收藏药膳；同一种用料会合并并尽量估算合计用量。沸水/清水不算购物项。</p>
+    <ul>${list.rows
+      .map((r) => {
+        const amount = r.total ? `${r.items.join('、')} · 合计约 ${r.total.sum}${r.total.unit}` : r.items.join('、');
+        return `<li><b>${esc(r.key)}</b><div>${esc(amount)}</div><span class="small muted">出自 ${esc(r.from.join('、'))}</span></li>`;
+      })
+      .join('')}</ul>
+    <div class="row-actions">
+      <button class="btn btn-sm btn-primary" id="copy-list">📋 复制清单</button>
+      <button class="btn btn-sm btn-ghost" id="dl-list">⬇ 下载清单.txt</button>
+    </div>
+  </div>`;
+  modal({ title: `🛒 购物清单（${list.rows.length} 种用料）`, body, okText: '关闭' });
+  setTimeout(() => {
+    qs('#copy-list')?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(list.text);
+        toast('清单已复制，去买菜吧', 'ok');
+      } catch {
+        toast('复制失败，可改用下载文件', 'warn');
+      }
+    });
+    qs('#dl-list')?.addEventListener('click', () => {
+      downloadBlob(`青养购物清单-${fmtDay(new Date())}.txt`, new Blob([list.text], { type: 'text/plain;charset=utf-8' }));
+      toast('清单已下载', 'ok');
+    });
+  }, 120);
 }
 
 function favoriteSubstances() {
@@ -339,6 +435,9 @@ export function renderHome(view, { query }) {
       renderHome(view, {});
     });
   }
+
+  const shopBtn = qs('#shopping-btn', view);
+  if (shopBtn) shopBtn.addEventListener('click', () => openShoppingList());
 }
 
 export function setHomeQuery(q) {

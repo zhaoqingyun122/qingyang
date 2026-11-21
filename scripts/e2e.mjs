@@ -734,6 +734,43 @@ async function main() {
   await shot('17-checkin');
 }
 
+  if (want('清单')) {
+  console.log('\n[购物清单]');
+  const rid = await evaluate(`(async () => {
+    const { store } = await import('./js/lib/store.js');
+    const r = store.recipes.find((x) => (x.ingredients || []).length) || store.recipes[0];
+    if (!r) return '';
+    await store.toggleBookmark('recipe', r.id);
+    return r.id;
+  })()`);
+  ok('已收藏一道药膳', typeof rid.value === 'string' && rid.value.length > 0, JSON.stringify(rid));
+  await goto('/', 1000);
+  const shopBtn = await evaluate(`document.querySelector('#shopping-btn')?.textContent || ''`);
+  ok('食谱本出现导出清单按钮', shopBtn.value.includes('购物清单'), JSON.stringify(shopBtn.value));
+  await evaluate(`document.querySelector('#shopping-btn')?.click()`);
+  await new Promise((r) => setTimeout(r, 900));
+  const list = await evaluate(`(() => {
+    const items = document.querySelectorAll('.shop-list li').length;
+    return {
+      items,
+      copyBtn: !!document.querySelector('#copy-list'),
+      dlBtn: !!document.querySelector('#dl-list'),
+      headline: document.querySelector('.modal-head h3')?.textContent || '',
+    };
+  })()`);
+  ok('弹出清单弹窗', (list.value?.headline || '').includes('购物清单'), JSON.stringify(list.value?.headline));
+  ok('清单已合并用料', (list.value?.items || 0) >= 1, JSON.stringify(list.value?.items));
+  ok('有复制与下载按钮', list.value?.copyBtn === true && list.value?.dlBtn === true, JSON.stringify({ c: list.value?.copyBtn, d: list.value?.dlBtn }));
+  // 复制按钮可点（headless 剪贴板权限可能受限，不因此判失败）
+  await evaluate(`document.querySelector('#copy-list')?.click()`);
+  await new Promise((r) => setTimeout(r, 400));
+  // 关闭弹窗并清理收藏
+  await evaluate(`document.querySelector('.modal-mask [data-close]')?.click()`);
+  await new Promise((r) => setTimeout(r, 350));
+  await evaluate(`(async () => { const { store } = await import('./js/lib/store.js'); const r = store.recipes.find((x) => (x.ingredients || []).length) || store.recipes[0]; if (r && store.isBookmarked('recipe', r.id)) await store.toggleBookmark('recipe', r.id); return 1; })()`);
+  await shot('18-shopping');
+}
+
   console.log('\n[错误检查]');
   const errs = consoleErrors.filter((e) => !/favicon|Download the React/i.test(e));
   ok('全流程无 JS 运行时异常', errs.length === 0, errs.slice(0, 5).join(' | '));

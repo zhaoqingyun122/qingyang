@@ -175,6 +175,19 @@ section('打卡与调理记录');
   ok('css 有打卡样式', /\.checkin-strip/.test(css) && /\.checkin-cell/.test(css));
 }
 
+// ---------- 1.10 购物清单导出 ----------
+section('购物清单导出');
+{
+  const homeSrc = fs.readFileSync(path.join(ROOT, 'js/views/home.js'), 'utf8');
+  const css = fs.readFileSync(path.join(ROOT, 'css/app.css'), 'utf8');
+  ok('有清单构建逻辑', /function buildShoppingList/.test(homeSrc) && /function openShoppingList/.test(homeSrc));
+  ok('食谱本有导出按钮', /shopping-btn/.test(homeSrc) && /导出购物清单/.test(homeSrc));
+  ok('弹窗含复制与下载', /copy-list/.test(homeSrc) && /dl-list/.test(homeSrc));
+  ok('合并同类与合计', /合计约/.test(homeSrc) && /localeCompare/.test(homeSrc));
+  ok('水类用料被排除', /沸水\|清水\|开水\|水/.test(homeSrc));
+  ok('css 有清单样式', /\.shop-list/.test(css));
+}
+
 // ---------- 2. 内容数据 ----------
 section('内容数据');
 const substances = (await import(pathToFileURL(path.join(ROOT, 'js/data/substances.js')).href)).SUBSTANCES;

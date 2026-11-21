@@ -602,3 +602,10 @@ body.dark .fav-btn { background: var(--card); }
 .link-btn { border: none; background: none; color: var(--green-d); cursor: pointer; font: inherit; padding: 0; text-decoration: underline; }
 button.link-btn:hover { color: var(--green); }
 .checkin-today.on { background: var(--green-l); }
+
+/* ================= 购物清单弹窗 ================= */
+.shop-list ul { margin: 10px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.shop-list li { border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; background: var(--card); }
+.shop-list li b { color: var(--green-d); }
+.shop-list li div { margin: 2px 0; }
+.shop-list .row-actions { margin-top: 14px; }

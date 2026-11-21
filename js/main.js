@@ -7,6 +7,7 @@ import { CONDITIONS } from './data/conditions.js';
 import { RECIPES } from './data/recipes.js';
 import { esc, qs } from './lib/dom.js';
 import { render, mountRouter } from './router.js';
+import { maybeShowOnboard } from './onboard.js';
 
 const view = qs('#view');
 
@@ -56,9 +57,22 @@ async function boot() {
   store.addEventListener('posts', flashSaveState);
   store.addEventListener('settings', flashSaveState);
 
+  // 外观偏好：深色模式 + 文字大小（设置页改动后经 settings 事件即时生效）
+  const applyTheme = () => {
+    document.body.classList.toggle('dark', !!store.settings.darkMode);
+    document.body.classList.remove('size-lg', 'size-xl');
+    if (store.settings.textSize === 'lg') document.body.classList.add('size-lg');
+    else if (store.settings.textSize === 'xl') document.body.classList.add('size-xl');
+  };
+  applyTheme();
+  store.addEventListener('settings', applyTheme);
+
   mountRouter();
   window.addEventListener('hashchange', render);
   render();
+
+  // 新用户引导（仅首次显示）
+  maybeShowOnboard();
 }
 
 boot();

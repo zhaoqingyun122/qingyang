@@ -113,12 +113,24 @@ export async function renderData(view) {
           </select>
         </label>
         <label class="field inline">
+          <span>文字大小</span>
+          <select class="select" id="set-text-size">
+            <option value="std" ${store.settings.textSize === 'std' ? 'selected' : ''}>标准</option>
+            <option value="lg" ${store.settings.textSize === 'lg' ? 'selected' : ''}>大</option>
+            <option value="xl" ${store.settings.textSize === 'xl' ? 'selected' : ''}>特大</option>
+          </select>
+        </label>
+        <label class="field inline">
           <span>详情页突出显示青少年剂量</span>
           <input type="checkbox" id="set-teen" ${store.settings.showTeenDose ? 'checked' : ''} />
         </label>
         <label class="field inline">
           <span>始终显示安全提示</span>
           <input type="checkbox" id="set-safe" ${store.settings.safeNotice ? 'checked' : ''} />
+        </label>
+        <label class="field inline">
+          <span>深色模式（夜间护眼）</span>
+          <input type="checkbox" id="set-dark" ${store.settings.darkMode ? 'checked' : ''} />
         </label>
       </div>
     </section>
@@ -193,6 +205,8 @@ function bind(view) {
           settings: pendingRestore.settings,
           posts: pendingRestore.posts,
           identifications: pendingRestore.identifications,
+          checkins: pendingRestore.checkins,
+          favorites: pendingRestore.favorites,
         });
         pendingRestore = null;
         toast('已从备份恢复', 'ok');
@@ -237,6 +251,10 @@ function bind(view) {
     await store.updateSettings({ cardDensity: e.target.value });
     toast('已保存偏好');
   });
+  qs('#set-text-size', view).addEventListener('change', async (e) => {
+    await store.updateSettings({ textSize: e.target.value });
+    toast('已保存偏好');
+  });
   qs('#set-teen', view).addEventListener('change', async (e) => {
     await store.updateSettings({ showTeenDose: e.target.checked });
     toast('已保存偏好');
@@ -244,6 +262,11 @@ function bind(view) {
   qs('#set-safe', view).addEventListener('change', async (e) => {
     await store.updateSettings({ safeNotice: e.target.checked });
     toast('已保存偏好');
+  });
+  qs('#set-dark', view).addEventListener('change', async (e) => {
+    // body.dark 由 main.js 监听 settings 事件统一切换，这里只需持久化
+    await store.updateSettings({ darkMode: e.target.checked });
+    toast(e.target.checked ? '已开启深色模式' : '已开启浅色模式', 'ok');
   });
 
   qs('#reset-btn', view).addEventListener('click', async () => {

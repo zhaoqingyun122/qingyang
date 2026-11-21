@@ -1,8 +1,9 @@
 // 青养 · 首页：药食同源物质鉴别与百科
 import { store } from '../lib/store.js';
-import { esc, html, qs, qsa, toast } from '../lib/dom.js';
+import { esc, html, qs, qsa, toast, modal, downloadBlob } from '../lib/dom.js';
 import { CATEGORY_META } from '../lib/seed.js';
 import { searchAll } from '../lib/search.js';
+import { TEAS } from '../data/teas.js';
 
 let state = {
   q: '',
@@ -52,6 +53,190 @@ function filterList() {
  * 首页「常翻的物质」：按“社区帖子被收藏的次数 + 鉴别记录确认次数”综合热度取前 6。
  * 没有收藏/鉴别记录时返回空数组，界面给引导文案。
  */
+const fmtDay = (dt) => {
+  const p = (n) => String(n).padStart(2, '0');
+  return `${dt.getFullYear()}-${p(dt.getMonth() + 1)}-${p(dt.getDate())}`;
+};
+
+// 最近 14 天（含今天），用于打卡日历条
+function lastNDays() {
+  const now = new Date();
+  const out = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+    out.push({ date: fmtDay(d), day: d.getDate(), dow: '日一二三四五六'[d.getDay()], today: i === 0 });
+  }
+  return out;
+}
+
+// 「每日调理打卡」：今天打卡按钮 + 最近 14 天日历条 + 当天备注
+function checkinSection() {
+  const today = fmtDay(new Date());
+  const dates = new Set(store.checkinDates());
+  const todayRecs = store.checkinsOfDate(today);
+  const done = todayRecs.length > 0;
+  const recent = store.checkins.filter((c) => c.date !== today).slice(0, 6);
+  return `<section class="panel">
+    <div class="panel-head">
+      <h2>每日调理打卡</h2>
+      <button class="btn btn-sm ${done ? 'btn-ghost' : 'btn-primary'}" id="checkin-btn" ${done ? 'disabled' : ''}>${done ? '✓ 今天已打卡' : '＋ 今天打卡'}</button>
+    </div>
+    <div class="checkin-strip">
+      ${lastNDays()
+        .map(
+          (c) => `<div class="checkin-cell ${dates.has(c.date) ? 'on' : ''} ${c.today ? 'today' : ''}" data-cdate="${c.date}" title="${c.date}"><em>${c.dow}</em><b>${c.day}</b></div>`
+        )
+        .join('')}
+    </div>
+    <div class="checkin-today ${done ? 'on' : ''}">
+      ${
+        done
+          ? `<b>✓ 今天已打卡</b>
+             <div class="checkin-note">
+               <input class="input" id="checkin-note" placeholder="今天吃了什么？身体感觉如何（可选）" value="${esc(todayRecs[0].note || '')}" />
+               <button class="btn btn-sm btn-primary" id="checkin-save-note">保存备注</button>
+             </div>
+             <p class="small muted">打卡时间 ${new Date(todayRecs[0].createdAt).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })} · <button class="link-btn" id="checkin-del">删除今天的记录</button></p>`
+          : `<p class="muted small">点「＋ 今天打卡」记录每天的饮食或调理情况，坚持下来回看更有成就感。</p>`
+      }
+    </div>
+    ${
+      recent.length
+        ? `<div class="checkin-recent"><span class="muted small">最近打卡：</span>${recent.map((c) => `<span class="chip soft">${c.date.slice(5)}</span>`).join('')}</div>`
+        : ''
+    }
+  </section>`;
+}
+
+// 「我的食谱本」：在首页展示收藏的物质 / 药膳 / 茶饮（有收藏才显示）
+function favBookSection() {
+  const favItems = [...store.favorites]
+    .map((k) => {
+      const idx = k.indexOf(':');
+      const type = k.slice(0, idx);
+      const id = k.slice(idx + 1);
+      if (type === 'substance') {
+        const s = store.substance(id);
+        return s ? { type, name: s.name, href: page(s.id), sub: s.category, icon: '🌿' } : null;
+      }
+      if (type === 'recipe') {
+        const r = store.recipe(id);
+        return r ? { type, name: r.name, href: `/recipe/${r.id}`, sub: '药膳', icon: '🍲' } : null;
+      }
+      if (type === 'tea') {
+        const t = TEAS.find((x) => x.id === id);
+        if (!t) return null;
+        return { type, name: t.name, href: `/conditions?c=${(t.conditionIds || [])[0] || ''}`, sub: '泡茶', icon: '🍵' };
+      }
+      return null;
+    })
+    .filter(Boolean);
+  if (!favItems.length) return '';
+  const nRecipe = favItems.filter((f) => f.type === 'recipe').length;
+  return `<section class="panel">
+    <div class="panel-head">
+      <h2>我的食谱本</h2>
+      <span class="muted small">${favItems.length} 项收藏 · 详情页可随时取消</span>
+    </div>
+    <div class="tagbox">${favItems.map((f) => `<a class="tag" data-link href="${esc(f.href)}">${f.icon} ${esc(f.name)} <small>${esc(f.sub)}</small></a>`).join('')}</div>
+    ${nRecipe ? `<div class="row-actions"><button class="btn btn-sm btn-primary" id="shopping-btn">🛒 导出购物清单（${nRecipe} 道药膳）</button></div>` : ''}
+  </section>`;
+}
+
+// 数字串求值：支持 '1/4' 这类分数写法
+function numVal(s) {
+  if (typeof s !== 'string') return 0;
+  if (s.includes('/')) {
+    const [a, b] = s.split('/').map(Number);
+    return a / (b || 1);
+  }
+  return Number(s) || 0;
+}
+
+// 汇总收藏药膳的用料 → 合并同类 → 生成购物清单文本
+function buildShoppingList() {
+  const favRecipes = [...store.favorites]
+    .filter((k) => k.startsWith('recipe:'))
+    .map((k) => store.recipe(k.slice(7)))
+    .filter(Boolean);
+  const groups = new Map();
+  for (const r of favRecipes) {
+    for (const ing of r.ingredients || []) {
+      const s = String(ing).trim();
+      if (!s || /^(沸水|清水|开水|水)/.test(s)) continue; // 水类不算购物项
+      const m = s.match(/^([\u4e00-\u9fa5A-Za-z（）()、·]+)/);
+      const key = m ? m[1].trim() : s;
+      if (!groups.has(key)) groups.set(key, { key, items: [], from: [] });
+      const g = groups.get(key);
+      g.items.push(s);
+      if (!g.from.includes(r.name)) g.from.push(r.name);
+    }
+  }
+  const rows = [...groups.values()].map((g) => {
+    const units = [...new Set(g.items.map((it) => { const mm = it.match(/([\d./]+)\s*([g克斤两毫升ml片枚粒勺包袋条个]+)/); return mm ? mm[2] : null; }).filter(Boolean))];
+    let total = null;
+    if (units.length === 1 && units[0]) {
+      let sum = 0;
+      let ok = true;
+      for (const it of g.items) {
+        const mm = it.match(/([\d./]+)\s*([g克斤两毫升ml片枚粒勺包袋条个]+)/);
+        if (!mm) { ok = false; break; }
+        sum += numVal(mm[1]);
+      }
+      if (ok) total = { sum: Math.round(sum * 100) / 100, unit: units[0] };
+    }
+    return { ...g, total };
+  }).sort((a, b) => a.key.localeCompare(b.key, 'zh-Hans-CN'));
+  const lines = ['青养 · 购物清单', `来自 ${favRecipes.length} 道收藏药膳，同一种用料已合并。`, ''];
+  for (const r of rows) {
+    const amount = r.total ? `${r.items.join('、')}（合计约 ${r.total.sum}${r.total.unit}）` : r.items.join('、');
+    lines.push(`□ ${r.key}：${amount}（出自 ${r.from.join('、')}）`);
+  }
+  lines.push('', '— 青养 app 自动生成');
+  return { favRecipes, rows, text: lines.join('\n') };
+}
+
+// 弹窗展示购物清单 + 复制 / 下载
+function openShoppingList() {
+  const list = buildShoppingList();
+  if (!list.favRecipes.length) {
+    toast('先把药膳收藏到食谱本，才能生成购物清单', 'warn');
+    return;
+  }
+  if (!list.rows.length) {
+    toast('收藏的药膳里没有可购买的用料', 'warn');
+    return;
+  }
+  const body = `<div class="shop-list">
+    <p class="small muted">合并自 ${list.favRecipes.length} 道收藏药膳；同一种用料会合并并尽量估算合计用量。沸水/清水不算购物项。</p>
+    <ul>${list.rows
+      .map((r) => {
+        const amount = r.total ? `${r.items.join('、')} · 合计约 ${r.total.sum}${r.total.unit}` : r.items.join('、');
+        return `<li><b>${esc(r.key)}</b><div>${esc(amount)}</div><span class="small muted">出自 ${esc(r.from.join('、'))}</span></li>`;
+      })
+      .join('')}</ul>
+    <div class="row-actions">
+      <button class="btn btn-sm btn-primary" id="copy-list">📋 复制清单</button>
+      <button class="btn btn-sm btn-ghost" id="dl-list">⬇ 下载清单.txt</button>
+    </div>
+  </div>`;
+  modal({ title: `🛒 购物清单（${list.rows.length} 种用料）`, body, okText: '关闭' });
+  setTimeout(() => {
+    qs('#copy-list')?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(list.text);
+        toast('清单已复制，去买菜吧', 'ok');
+      } catch {
+        toast('复制失败，可改用下载文件', 'warn');
+      }
+    });
+    qs('#dl-list')?.addEventListener('click', () => {
+      downloadBlob(`青养购物清单-${fmtDay(new Date())}.txt`, new Blob([list.text], { type: 'text/plain;charset=utf-8' }));
+      toast('清单已下载', 'ok');
+    });
+  }, 120);
+}
+
 function favoriteSubstances() {
   const favMap = new Map();
   for (const p of store.posts) {
@@ -100,6 +285,8 @@ export function renderHome(view, { query }) {
         </div>
       </div>
     </section>
+
+    ${favBookSection()}${checkinSection()}
 
     <section class="panel">
       <div class="panel-head">
@@ -220,6 +407,37 @@ export function renderHome(view, { query }) {
       renderHome(view, {});
     })
   );
+
+  // 每日调理打卡
+  const checkinBtn = qs('#checkin-btn', view);
+  if (checkinBtn) {
+    checkinBtn.addEventListener('click', async () => {
+      await store.addCheckin({ id: 'ck_' + Date.now().toString(36), date: fmtDay(new Date()), note: '', createdAt: Date.now() });
+      toast('已打卡，坚持就是胜利 🎉', 'ok');
+      renderHome(view, {});
+    });
+  }
+  const noteSave = qs('#checkin-save-note', view);
+  if (noteSave) {
+    noteSave.addEventListener('click', async () => {
+      const rec = store.checkinsOfDate(fmtDay(new Date()))[0];
+      if (!rec) return;
+      await store.addCheckin({ ...rec, note: qs('#checkin-note', view).value });
+      toast('备注已保存', 'ok');
+      renderHome(view, {});
+    });
+  }
+  const checkinDel = qs('#checkin-del', view);
+  if (checkinDel) {
+    checkinDel.addEventListener('click', async () => {
+      for (const r of store.checkinsOfDate(fmtDay(new Date()))) await store.removeCheckin(r.id);
+      toast('已删除今天的打卡', 'ok');
+      renderHome(view, {});
+    });
+  }
+
+  const shopBtn = qs('#shopping-btn', view);
+  if (shopBtn) shopBtn.addEventListener('click', () => openShoppingList());
 }
 
 export function setHomeQuery(q) {
@@ -248,6 +466,7 @@ export function renderSubstancePage(view, id) {
         <p class="nature-line">${esc(s.nature)}</p>
       </div>
       <div class="detail-quick">
+        <button class="btn btn-sm fav-btn ${store.isBookmarked('substance', s.id) ? 'on' : ''}" id="fav-item" data-fav-type="substance" data-fav-id="${s.id}">${store.isBookmarked('substance', s.id) ? '♥ 已收藏' : '＋ 收藏到食谱本'}</button>
         <div class="dose-card adult"><span>成人参考量</span><b>${esc(s.adultDose)}</b></div>
         <div class="dose-card teen"><span>青少年参考量</span><b>${esc(s.teenDose)}</b></div>
       </div>
@@ -317,6 +536,19 @@ export function renderSubstancePage(view, id) {
     </div>`;
 
   qs('#go-photo', view).addEventListener('click', () => window.qy.openPhoto());
+  bindFav(view, 'substance', s.id, s.name);
+}
+
+// 收藏按钮通用绑定：切换后更新按钮态并提示
+function bindFav(view, type, id, label) {
+  const btn = qs('[data-fav-type="' + type + '"][data-fav-id="' + id + '"]', view);
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    const on = await store.toggleBookmark(type, id);
+    btn.classList.toggle('on', on);
+    btn.textContent = on ? '♥ 已收藏' : '＋ 收藏到食谱本';
+    toast(on ? `已把「${label}」收藏到食谱本` : `已取消收藏「${label}」`, 'ok');
+  });
 }
 
 export function recipeCard(r) {
@@ -344,6 +576,7 @@ export function renderRecipePage(view, id) {
     <div class="crumb"><a data-link href="/">首页</a> / <a data-link href="/conditions">身体状况</a> / <b>${esc(r.name)}</b></div>
     <section class="panel recipe-detail">
       <h1>${esc(r.name)}</h1>
+      <button class="btn btn-sm fav-btn ${store.isBookmarked('recipe', r.id) ? 'on' : ''}" data-fav-type="recipe" data-fav-id="${r.id}">${store.isBookmarked('recipe', r.id) ? '♥ 已收藏' : '＋ 收藏到食谱本'}</button>
       <div class="tagbox">
         ${subs.map((s) => `<a class="tag" data-link href="${page(s.id)}">${esc(s.name)}</a>`).join('')}
         ${conds.map((c) => `<a class="tag cond" data-link href="/conditions?c=${c.id}">${esc(c.name)}</a>`).join('')}
@@ -376,4 +609,5 @@ export function renderRecipePage(view, id) {
         <a class="btn btn-ghost" data-link href="/community?filter=recipe:${r.id}">看看别人怎么吃</a>
       </div>
     </section>`;
+  bindFav(view, 'recipe', r.id, r.name);
 }

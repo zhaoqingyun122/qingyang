@@ -6,8 +6,9 @@ import { MEDICAL_GUIDE } from '../data/medical.js';
 import { TEAS } from '../data/teas.js';
 
 function teaCard(t) {
+  const on = store.isBookmarked('tea', t.id);
   return `<div class="tea-card">
-    <b>🍵 ${esc(t.name)}</b>
+    <div class="tea-head"><b>🍵 ${esc(t.name)}</b><button class="fav-btn fav-sm ${on ? 'on' : ''}" data-fav-type="tea" data-fav-id="${t.id}" title="收藏到食谱本">${on ? '♥' : '＋'}</button></div>
     <p class="tea-ing">配料：${esc((t.ingredients || []).join('、'))}</p>
     <p class="small muted">${esc(t.method || '')}</p>
     <div class="dose-line">
@@ -196,4 +197,15 @@ function renderConditionDetail(view, c) {
       <p>青少年指 12–18 岁左右；更小的儿童需在此基础上再减半，并咨询医师。以上均为<b>家庭日常参考量</b>，不替代处方剂量。</p>
       <p>同一天不要叠加多种作用相近的物质；服用中药、降糖降压药期间请先咨询医师。</p>
     </div>`;
+
+  // 茶饮收藏按钮（收藏到「我的食谱本」）
+  qsa('[data-fav-type="tea"]', el).forEach((btn) =>
+    btn.addEventListener('click', async () => {
+      const on = await store.toggleBookmark('tea', btn.dataset.favId);
+      btn.classList.toggle('on', on);
+      btn.textContent = on ? '♥' : '＋';
+      const t = TEAS.find((x) => x.id === btn.dataset.favId);
+      toast(on ? `已把「${t?.name || ''}」收藏到食谱本` : '已取消收藏', 'ok');
+    })
+  );
 }

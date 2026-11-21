@@ -511,3 +511,122 @@ p { margin: 0 0 8px; }
 /* 数据页 · 立即保存 */
 .save-panel { border-left: 4px solid var(--green); }
 .save-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+
+/* ================= 深色模式（设置页开关，body.dark） ================= */
+body.dark {
+  --bg: #161a16;
+  --bg-2: #1c221c;
+  --card: #232a24;
+  --ink: #e7eae3;
+  --ink-2: #b9c1b4;
+  --muted: #97a094;
+  --line: #3b443b;
+  --green: #82b37b;
+  --green-d: #9ccb95;
+  --green-l: #28372a;
+  --amber: #d8ac63;
+  --amber-l: #382d1b;
+  --blue: #87b1d3;
+  --blue-l: #223342;
+  --red: #d68d82;
+  --red-l: #3b2723;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.38), 0 12px 32px rgba(0, 0, 0, 0.32);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+  background:
+    radial-gradient(1200px 500px at 90% -10%, #1d271d 0%, transparent 60%),
+    radial-gradient(900px 400px at -10% 0%, #241f16 0%, transparent 55%),
+    var(--bg);
+}
+body.dark .search-wrap input { background: rgba(35, 42, 36, 0.9); }
+body.dark .suggest { background: var(--card); }
+body.dark .tabbar { background: rgba(35, 42, 36, 0.85); }
+body.dark .btn { background: var(--card); }
+body.dark .btn-ghost { background: rgba(35, 42, 36, 0.85); }
+body.dark .input, body.dark .select { background: var(--card); }
+body.dark .chip { background: var(--card); }
+body.dark .hero { background: linear-gradient(135deg, #20281f 0%, #262117 100%); }
+body.dark .hero-tip { background: rgba(35, 42, 36, 0.8); border-color: rgba(35, 42, 36, 0.9); }
+body.dark .sub-card { background: linear-gradient(180deg, #232a24 0%, #1f261f 100%); }
+body.dark .sub-card:hover { border-color: var(--line); }
+body.dark .dose-card { background: var(--card); }
+body.dark .dose.teen, body.dark .tag.cond, body.dark .post-recipe-name, body.dark .post-recipe span { color: var(--amber); }
+body.dark .safety { background: #2c2617; border-color: #4a3d22; color: #cbb488; }
+body.dark .recipe-card:hover { background: var(--card); }
+body.dark .dose-box.adult, body.dark .dose-box.teen { border-color: var(--line); }
+body.dark .cond-hero { background: linear-gradient(135deg, #262117 0%, #1e271e 100%); }
+body.dark .cond-card, body.dark .cond-head, body.dark .dose-table-wrap,
+body.dark .post, body.dark .stat, body.dark .cand, body.dark .fchip,
+body.dark .modal-head, body.dark .modal-foot, body.dark .tea-card { background: var(--card); }
+body.dark .dose-table td, body.dark .row { border-color: var(--line); }
+body.dark .post-recipe { border-color: var(--line); }
+body.dark .danger-zone { border-color: #4a3533; background: #2a201f; }
+body.dark .medical-card { background: #2c201c; border-color: #4a352c; border-left-color: #c2493a; }
+body.dark .tea-card { border-left-color: #c98a1b; }
+body.dark .toast { background: rgba(20, 24, 20, 0.94); }
+
+/* ================= 字号调节（设置页开关，body.size-*） ================= */
+body.size-lg { zoom: 1.08; }
+body.size-xl { zoom: 1.2; }
+@supports not (zoom: 1) {
+  body.size-lg { font-size: 16.5px; }
+  body.size-xl { font-size: 18px; }
+}
+
+/* ================= 收藏（我的食谱本） ================= */
+.fav-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  border: 1px solid var(--line); background: var(--card); color: var(--ink-2);
+  border-radius: 999px; cursor: pointer; font: inherit; font-size: 13px;
+  padding: 6px 14px; transition: .18s; white-space: nowrap;
+}
+.fav-btn:hover { border-color: var(--amber); color: var(--amber); }
+.fav-btn.on { background: var(--amber-l); border-color: var(--amber); color: var(--amber); }
+.fav-sm { padding: 3px 9px; font-size: 12px; }
+.tea-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+body.dark .fav-btn { background: var(--card); }
+
+/* ================= 每日调理打卡 ================= */
+.checkin-strip { display: grid; grid-template-columns: repeat(14, 1fr); gap: 6px; margin: 12px 0 14px; }
+.checkin-cell { border: 1px solid var(--line); border-radius: 10px; text-align: center; padding: 6px 0 4px; background: var(--card); transition: .18s; }
+.checkin-cell em { display: block; font-style: normal; font-size: 11px; color: var(--ink-3); }
+.checkin-cell b { font-size: 14px; color: var(--ink-2); }
+.checkin-cell.on { background: var(--green-l); border-color: var(--green); }
+.checkin-cell.on b { color: var(--green-d); }
+.checkin-cell.today { border-color: var(--green); box-shadow: 0 0 0 2px var(--green-l); }
+.checkin-today { border-left: 3px solid var(--green); background: var(--green-l); border-radius: 0 10px 10px 0; padding: 10px 14px; }
+.checkin-today b { color: var(--green-d); }
+.checkin-note { display: flex; gap: 8px; margin: 8px 0; }
+.checkin-note .input { flex: 1; }
+.checkin-recent { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.link-btn { border: none; background: none; color: var(--green-d); cursor: pointer; font: inherit; padding: 0; text-decoration: underline; }
+button.link-btn:hover { color: var(--green); }
+.checkin-today.on { background: var(--green-l); }
+
+/* ================= 购物清单弹窗 ================= */
+.shop-list ul { margin: 10px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.shop-list li { border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; background: var(--card); }
+.shop-list li b { color: var(--green-d); }
+.shop-list li div { margin: 2px 0; }
+.shop-list .row-actions { margin-top: 14px; }
+
+/* ================= 新用户引导 ================= */
+.onboard-mask {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(10, 14, 10, 0.45);
+  display: flex; align-items: center; justify-content: center; padding: 18px;
+  animation: fadeIn .2s ease;
+}
+.onboard {
+  background: var(--card); color: var(--ink);
+  border-radius: 16px; border: 1px solid var(--line);
+  box-shadow: var(--shadow); max-width: 620px; width: 100%;
+  padding: 22px 24px; box-sizing: border-box;
+}
+.onboard h2 { margin: 0 0 8px; color: var(--green-d); }
+.onboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+.onboard-item { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--bg); }
+.onboard-item b { display: block; margin-bottom: 4px; color: var(--green-d); }
+.onboard-item span { font-size: 13px; color: var(--ink-2); }
+#onboard-close { width: 100%; }
+body.dark .onboard-item { background: var(--bg); }

@@ -7,6 +7,8 @@ const DEFAULT_SETTINGS = {
   showTeenDose: true, // 物质详情默认展开青少年剂量
   homeSort: 'category', // category | pinyin
   safeNotice: true, // 详情页显示安全提示
+  darkMode: false, // 深色模式（夜间护眼）
+  textSize: 'std', // std | lg | xl 文字大小
 };
 
 class Store extends EventTarget {
@@ -19,6 +21,8 @@ class Store extends EventTarget {
     this.visitors = [];
     this.settings = { ...DEFAULT_SETTINGS };
     this.identifications = [];
+    this.checkins = [];
+    this.favorites = new Set();
     this.ready = false;
     this.mode = 'indexeddb';
   }
@@ -40,8 +44,12 @@ class Store extends EventTarget {
     const settings = await db.getMeta('settings', null);
     this.settings = { ...DEFAULT_SETTINGS, ...(settings || {}) };
 
+    const favs = await db.getMeta('favorites', null);
+    this.favorites = new Set(Array.isArray(favs) ? favs : []);
+
     this.posts = (await db.all('posts')).sort((a, b) => b.createdAt - a.createdAt);
     this.identifications = (await db.all('identifications')).sort((a, b) => b.createdAt - a.createdAt);
+    this.checkins = (await db.all('checkins')).sort((a, b) => b.date > a.date ? -1 : (b.date < a.date ? 1 : 0));
 
     // 只在首次使用时写入示例帖子；用户把帖子全删光后不会再被塞回来
     const seeded = await db.getMeta('seeded', false);
@@ -82,6 +90,19 @@ class Store extends EventTarget {
   }
   visitor(id) {
     return this.visitors.find((v) => v.id === id);
+  }
+
+  /* ---------- 知识页收藏（物质/药膳/茶饮 → 我的食谱本） ---------- */
+  async toggleBookmark(type, id) {
+    const key = `${type}:${id}`;
+    if (this.favorites.has(key)) this.favorites.delete(key);
+    else this.favorites.add(key);
+    await db.setMeta('favorites', [...this.favorites]);
+    this.emit('favorites');
+    return this.favorites.has(key);
+  }
+  isBookmarked(type, id) {
+    return this.favorites.has(`${type}:${id}`);
   }
 
   /* ---------- 设置 ---------- */
@@ -165,6 +186,25 @@ class Store extends EventTarget {
     this.emit('identifications');
   }
 
+  /* ---------- 饮食打卡 / 调理记录 ---------- */
+  checkinsOfDate(date) {
+    return this.checkins.filter((c) => c.date === date).sort((a, b) => a.createdAt - b.createdAt);
+  }
+  checkinDates() {
+    return [...new Set(this.checkins.map((c) => c.date))];
+  }
+  async addCheckin(rec) {
+    this.checkins = [...this.checkins.filter((x) => x.id !== rec.id), rec].sort((a, b) => (b.date < a.date ? 1 : -1));
+    await db.put('checkins', rec);
+    this.emit('checkins');
+    return rec;
+  }
+  async removeCheckin(id) {
+    this.checkins = this.checkins.filter((c) => c.id !== id);
+    await db.remove('checkins', id);
+    this.emit('checkins');
+  }
+
   /* ---------- 备份 / 恢复 / 重置 ---------- */
   async exportBackup() {
     return {
@@ -175,6 +215,8 @@ class Store extends EventTarget {
       visitors: this.visitors,
       posts: this.posts,
       identifications: this.identifications,
+      checkins: this.checkins,
+      favorites: [...this.favorites],
     };
   }
 
@@ -184,8 +226,10 @@ class Store extends EventTarget {
   async saveNow() {
     await db.setMeta('visitors', this.visitors);
     await db.setMeta('settings', this.settings);
+    await db.setMeta('favorites', [...this.favorites]);
     for (const p of this.posts) await db.put('posts', p);
     for (const r of this.identifications) await db.put('identifications', r);
+    for (const c of this.checkins) await db.put('checkins', c);
     const at = Date.now();
     await db.setMeta('lastSavedAt', at);
     this.emit('saved');
@@ -211,18 +255,31 @@ class Store extends EventTarget {
       this.identifications = data.identifications.slice().sort((a, b) => b.createdAt - a.createdAt);
       for (const r of this.identifications) await db.put('identifications', r);
     }
+    if (Array.isArray(data.checkins)) {
+      for (const c of this.checkins) await db.remove('checkins', c.id);
+      this.checkins = data.checkins.slice();
+      for (const c of this.checkins) await db.put('checkins', c);
+    }
+    if (Array.isArray(data.favorites)) {
+      this.favorites = new Set(data.favorites);
+      await db.setMeta('favorites', [...this.favorites]);
+    }
     this.emit('change');
   }
 
   async resetAll(seed) {
     for (const p of this.posts) await db.remove('posts', p.id);
     for (const r of this.identifications) await db.remove('identifications', r.id);
+    for (const c of this.checkins) await db.remove('checkins', c.id);
     this.visitors = seed.DEFAULT_VISITORS.slice();
     this.settings = { ...DEFAULT_SETTINGS };
     this.posts = seed.seedPosts();
     this.identifications = [];
+    this.checkins = [];
+    this.favorites = new Set();
     await db.setMeta('visitors', this.visitors);
     await db.setMeta('settings', this.settings);
+    await db.setMeta('favorites', []);
     await db.setMeta('seeded', true);
     for (const p of this.posts) await db.put('posts', p);
     this.emit('change');

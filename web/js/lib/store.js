@@ -7,6 +7,7 @@ const DEFAULT_SETTINGS = {
   showTeenDose: true, // 物质详情默认展开青少年剂量
   homeSort: 'category', // category | pinyin
   safeNotice: true, // 详情页显示安全提示
+  darkMode: false, // 深色模式（夜间护眼）
 };
 
 class Store extends EventTarget {

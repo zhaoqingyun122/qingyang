@@ -108,6 +108,23 @@ section('PWA 配置');
   }
 }
 
+// ---------- 1.6 深色模式与偏好设置 ----------
+section('深色模式');
+{
+  const storeSrc = fs.readFileSync(path.join(ROOT, 'js/lib/store.js'), 'utf8');
+  const dataSrc = fs.readFileSync(path.join(ROOT, 'js/views/data.js'), 'utf8');
+  const mainSrc = fs.readFileSync(path.join(ROOT, 'js/main.js'), 'utf8');
+  const css = fs.readFileSync(path.join(ROOT, 'css/app.css'), 'utf8');
+  ok('默认设置含 darkMode=false', /darkMode: false/.test(storeSrc));
+  ok('数据页有深色开关', /set-dark/.test(dataSrc) && /深色模式/.test(dataSrc));
+  ok('切换开关持久化设置', /updateSettings\(\{ darkMode: e\.target\.checked \}\)/.test(dataSrc));
+  ok('main 启动应用深色类', /classList\.toggle\('dark'/.test(mainSrc) && /applyTheme/.test(mainSrc));
+  ok('css 有 body.dark 变量覆盖', /body\.dark\s*\{[\s\S]*?--bg:/.test(css));
+  ok('css 深色覆盖主要卡片', /body\.dark \.sub-card/.test(css) && /body\.dark \.post/.test(css));
+  ok('css 深色覆盖弹窗与输入', /body\.dark \.modal-head/.test(css) && /body\.dark \.input/.test(css));
+  ok('css 深色覆盖 medical/tea', /body\.dark \.medical-card/.test(css) && /body\.dark \.tea-card/.test(css));
+}
+
 // ---------- 2. 内容数据 ----------
 section('内容数据');
 const substances = (await import(pathToFileURL(path.join(ROOT, 'js/data/substances.js')).href)).SUBSTANCES;

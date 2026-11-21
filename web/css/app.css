@@ -511,3 +511,56 @@ p { margin: 0 0 8px; }
 /* 数据页 · 立即保存 */
 .save-panel { border-left: 4px solid var(--green); }
 .save-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+
+/* ================= 深色模式（设置页开关，body.dark） ================= */
+body.dark {
+  --bg: #161a16;
+  --bg-2: #1c221c;
+  --card: #232a24;
+  --ink: #e7eae3;
+  --ink-2: #b9c1b4;
+  --muted: #97a094;
+  --line: #3b443b;
+  --green: #82b37b;
+  --green-d: #9ccb95;
+  --green-l: #28372a;
+  --amber: #d8ac63;
+  --amber-l: #382d1b;
+  --blue: #87b1d3;
+  --blue-l: #223342;
+  --red: #d68d82;
+  --red-l: #3b2723;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.38), 0 12px 32px rgba(0, 0, 0, 0.32);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+  background:
+    radial-gradient(1200px 500px at 90% -10%, #1d271d 0%, transparent 60%),
+    radial-gradient(900px 400px at -10% 0%, #241f16 0%, transparent 55%),
+    var(--bg);
+}
+body.dark .search-wrap input { background: rgba(35, 42, 36, 0.9); }
+body.dark .suggest { background: var(--card); }
+body.dark .tabbar { background: rgba(35, 42, 36, 0.85); }
+body.dark .btn { background: var(--card); }
+body.dark .btn-ghost { background: rgba(35, 42, 36, 0.85); }
+body.dark .input, body.dark .select { background: var(--card); }
+body.dark .chip { background: var(--card); }
+body.dark .hero { background: linear-gradient(135deg, #20281f 0%, #262117 100%); }
+body.dark .hero-tip { background: rgba(35, 42, 36, 0.8); border-color: rgba(35, 42, 36, 0.9); }
+body.dark .sub-card { background: linear-gradient(180deg, #232a24 0%, #1f261f 100%); }
+body.dark .sub-card:hover { border-color: var(--line); }
+body.dark .dose-card { background: var(--card); }
+body.dark .dose.teen, body.dark .tag.cond, body.dark .post-recipe-name, body.dark .post-recipe span { color: var(--amber); }
+body.dark .safety { background: #2c2617; border-color: #4a3d22; color: #cbb488; }
+body.dark .recipe-card:hover { background: var(--card); }
+body.dark .dose-box.adult, body.dark .dose-box.teen { border-color: var(--line); }
+body.dark .cond-hero { background: linear-gradient(135deg, #262117 0%, #1e271e 100%); }
+body.dark .cond-card, body.dark .cond-head, body.dark .dose-table-wrap,
+body.dark .post, body.dark .stat, body.dark .cand, body.dark .fchip,
+body.dark .modal-head, body.dark .modal-foot, body.dark .tea-card { background: var(--card); }
+body.dark .dose-table td, body.dark .row { border-color: var(--line); }
+body.dark .post-recipe { border-color: var(--line); }
+body.dark .danger-zone { border-color: #4a3533; background: #2a201f; }
+body.dark .medical-card { background: #2c201c; border-color: #4a352c; border-left-color: #c2493a; }
+body.dark .tea-card { border-left-color: #c98a1b; }
+body.dark .toast { background: rgba(20, 24, 20, 0.94); }

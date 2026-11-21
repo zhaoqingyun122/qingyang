@@ -598,6 +598,34 @@ async function main() {
   await shot('14-pwa');
   }
 
+  if (want('深色')) {
+  console.log('\n[深色模式]');
+  await goto('/data', 900);
+  const before = await evaluate(`document.body.classList.contains('dark')`);
+  ok('默认浅色模式', before.value === false, JSON.stringify(before));
+  await evaluate(`(() => { const s = document.querySelector('#set-dark'); if (s && !s.checked) s.click(); return 1; })()`);
+  await new Promise((r) => setTimeout(r, 800));
+  const on = await evaluate(`({
+    dark: document.body.classList.contains('dark'),
+    persisted: qy && qy.status ? true : false
+  })`);
+  const meta = await evaluate(`(async () => { const { store } = await import('./js/lib/store.js'); return store.settings.darkMode; })()`);
+  ok('切换后 body.dark 生效', on.value?.dark === true, JSON.stringify(on));
+  ok('darkMode 已写入设置', meta.value === true);
+  await shot('15-dark');
+  // 刷新持久化
+  await send('Page.reload', {});
+  await new Promise((r) => setTimeout(r, 1200));
+  const darkAfterReload = await evaluate(`document.body.classList.contains('dark')`);
+  ok('刷新后深色保留', darkAfterReload.value === true, JSON.stringify(darkAfterReload));
+  // 切回浅色
+  await goto('/data', 900);
+  await evaluate(`(() => { const s = document.querySelector('#set-dark'); if (s && s.checked) s.click(); return 1; })()`);
+  await new Promise((r) => setTimeout(r, 700));
+  const off = await evaluate(`document.body.classList.contains('dark')`);
+  ok('可切回浅色', off.value === false, JSON.stringify(off));
+  }
+
   console.log('\n[错误检查]');
   const errs = consoleErrors.filter((e) => !/favicon|Download the React/i.test(e));
   ok('全流程无 JS 运行时异常', errs.length === 0, errs.slice(0, 5).join(' | '));

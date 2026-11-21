@@ -56,6 +56,13 @@ async function boot() {
   store.addEventListener('posts', flashSaveState);
   store.addEventListener('settings', flashSaveState);
 
+  // 深色模式：根据设置切换 body.dark（设置页改动后经 settings 事件即时生效）
+  const applyTheme = () => document.body.classList.toggle('dark', !!store.settings.darkMode);
+  applyTheme();
+  store.addEventListener('settings', () => {
+    applyTheme();
+  });
+
   mountRouter();
   window.addEventListener('hashchange', render);
   render();

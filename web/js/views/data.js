@@ -120,6 +120,10 @@ export async function renderData(view) {
           <span>始终显示安全提示</span>
           <input type="checkbox" id="set-safe" ${store.settings.safeNotice ? 'checked' : ''} />
         </label>
+        <label class="field inline">
+          <span>深色模式（夜间护眼）</span>
+          <input type="checkbox" id="set-dark" ${store.settings.darkMode ? 'checked' : ''} />
+        </label>
       </div>
     </section>
 
@@ -244,6 +248,11 @@ function bind(view) {
   qs('#set-safe', view).addEventListener('change', async (e) => {
     await store.updateSettings({ safeNotice: e.target.checked });
     toast('已保存偏好');
+  });
+  qs('#set-dark', view).addEventListener('change', async (e) => {
+    // body.dark 由 main.js 监听 settings 事件统一切换，这里只需持久化
+    await store.updateSettings({ darkMode: e.target.checked });
+    toast(e.target.checked ? '已开启深色模式' : '已开启浅色模式', 'ok');
   });
 
   qs('#reset-btn', view).addEventListener('click', async () => {

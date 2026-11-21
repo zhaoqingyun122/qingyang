@@ -3,6 +3,7 @@ import { store } from '../lib/store.js';
 import { esc, html, qs, qsa, toast } from '../lib/dom.js';
 import { CATEGORY_META } from '../lib/seed.js';
 import { searchAll } from '../lib/search.js';
+import { TEAS } from '../data/teas.js';
 
 let state = {
   q: '',
@@ -52,6 +53,39 @@ function filterList() {
  * 首页「常翻的物质」：按“社区帖子被收藏的次数 + 鉴别记录确认次数”综合热度取前 6。
  * 没有收藏/鉴别记录时返回空数组，界面给引导文案。
  */
+// 「我的食谱本」：在首页展示收藏的物质 / 药膳 / 茶饮（有收藏才显示）
+function favBookSection() {
+  const favItems = [...store.favorites]
+    .map((k) => {
+      const idx = k.indexOf(':');
+      const type = k.slice(0, idx);
+      const id = k.slice(idx + 1);
+      if (type === 'substance') {
+        const s = store.substance(id);
+        return s ? { type, name: s.name, href: page(s.id), sub: s.category, icon: '🌿' } : null;
+      }
+      if (type === 'recipe') {
+        const r = store.recipe(id);
+        return r ? { type, name: r.name, href: `/recipe/${r.id}`, sub: '药膳', icon: '🍲' } : null;
+      }
+      if (type === 'tea') {
+        const t = TEAS.find((x) => x.id === id);
+        if (!t) return null;
+        return { type, name: t.name, href: `/conditions?c=${(t.conditionIds || [])[0] || ''}`, sub: '泡茶', icon: '🍵' };
+      }
+      return null;
+    })
+    .filter(Boolean);
+  if (!favItems.length) return '';
+  return `<section class="panel">
+    <div class="panel-head">
+      <h2>我的食谱本</h2>
+      <span class="muted small">${favItems.length} 项收藏 · 详情页可随时取消</span>
+    </div>
+    <div class="tagbox">${favItems.map((f) => `<a class="tag" data-link href="${esc(f.href)}">${f.icon} ${esc(f.name)} <small>${esc(f.sub)}</small></a>`).join('')}</div>
+  </section>`;
+}
+
 function favoriteSubstances() {
   const favMap = new Map();
   for (const p of store.posts) {
@@ -100,6 +134,8 @@ export function renderHome(view, { query }) {
         </div>
       </div>
     </section>
+
+    ${favBookSection()}
 
     <section class="panel">
       <div class="panel-head">
@@ -248,6 +284,7 @@ export function renderSubstancePage(view, id) {
         <p class="nature-line">${esc(s.nature)}</p>
       </div>
       <div class="detail-quick">
+        <button class="btn btn-sm fav-btn ${store.isBookmarked('substance', s.id) ? 'on' : ''}" id="fav-item" data-fav-type="substance" data-fav-id="${s.id}">${store.isBookmarked('substance', s.id) ? '♥ 已收藏' : '＋ 收藏到食谱本'}</button>
         <div class="dose-card adult"><span>成人参考量</span><b>${esc(s.adultDose)}</b></div>
         <div class="dose-card teen"><span>青少年参考量</span><b>${esc(s.teenDose)}</b></div>
       </div>
@@ -317,6 +354,19 @@ export function renderSubstancePage(view, id) {
     </div>`;
 
   qs('#go-photo', view).addEventListener('click', () => window.qy.openPhoto());
+  bindFav(view, 'substance', s.id, s.name);
+}
+
+// 收藏按钮通用绑定：切换后更新按钮态并提示
+function bindFav(view, type, id, label) {
+  const btn = qs('[data-fav-type="' + type + '"][data-fav-id="' + id + '"]', view);
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    const on = await store.toggleBookmark(type, id);
+    btn.classList.toggle('on', on);
+    btn.textContent = on ? '♥ 已收藏' : '＋ 收藏到食谱本';
+    toast(on ? `已把「${label}」收藏到食谱本` : `已取消收藏「${label}」`, 'ok');
+  });
 }
 
 export function recipeCard(r) {
@@ -344,6 +394,7 @@ export function renderRecipePage(view, id) {
     <div class="crumb"><a data-link href="/">首页</a> / <a data-link href="/conditions">身体状况</a> / <b>${esc(r.name)}</b></div>
     <section class="panel recipe-detail">
       <h1>${esc(r.name)}</h1>
+      <button class="btn btn-sm fav-btn ${store.isBookmarked('recipe', r.id) ? 'on' : ''}" data-fav-type="recipe" data-fav-id="${r.id}">${store.isBookmarked('recipe', r.id) ? '♥ 已收藏' : '＋ 收藏到食谱本'}</button>
       <div class="tagbox">
         ${subs.map((s) => `<a class="tag" data-link href="${page(s.id)}">${esc(s.name)}</a>`).join('')}
         ${conds.map((c) => `<a class="tag cond" data-link href="/conditions?c=${c.id}">${esc(c.name)}</a>`).join('')}
@@ -376,4 +427,5 @@ export function renderRecipePage(view, id) {
         <a class="btn btn-ghost" data-link href="/community?filter=recipe:${r.id}">看看别人怎么吃</a>
       </div>
     </section>`;
+  bindFav(view, 'recipe', r.id, r.name);
 }

@@ -572,3 +572,16 @@ body.size-xl { zoom: 1.2; }
   body.size-lg { font-size: 16.5px; }
   body.size-xl { font-size: 18px; }
 }
+
+/* ================= 收藏（我的食谱本） ================= */
+.fav-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  border: 1px solid var(--line); background: var(--card); color: var(--ink-2);
+  border-radius: 999px; cursor: pointer; font: inherit; font-size: 13px;
+  padding: 6px 14px; transition: .18s; white-space: nowrap;
+}
+.fav-btn:hover { border-color: var(--amber); color: var(--amber); }
+.fav-btn.on { background: var(--amber-l); border-color: var(--amber); color: var(--amber); }
+.fav-sm { padding: 3px 9px; font-size: 12px; }
+.tea-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+body.dark .fav-btn { background: var(--card); }

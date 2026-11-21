@@ -20,6 +20,7 @@ export async function buildBackup(store) {
       visitors: store.visitors,
       posts: store.posts,
       identifications: store.identifications.map((r) => ({ ...r })),
+      favorites: [...store.favorites],
     },
   };
   return payload;
@@ -38,6 +39,7 @@ export function validateBackup(obj) {
     identifications: d.identifications || [],
     visitors: d.visitors || [],
     settings: d.settings && typeof d.settings === 'object' ? d.settings : null,
+    favorites: Array.isArray(d.favorites) ? d.favorites : [],
     exportedAt: obj.exportedAt,
   };
 }

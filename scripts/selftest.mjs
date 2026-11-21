@@ -139,6 +139,25 @@ section('字号调节');
   ok('css 有 size-lg/size-xl 缩放', /body\.size-lg/.test(css) && /body\.size-xl/.test(css));
 }
 
+// ---------- 1.8 收藏与食谱本 ----------
+section('收藏与食谱本');
+{
+  const storeSrc = fs.readFileSync(path.join(ROOT, 'js/lib/store.js'), 'utf8');
+  const backupSrc = fs.readFileSync(path.join(ROOT, 'js/lib/backup.js'), 'utf8');
+  const homeSrc = fs.readFileSync(path.join(ROOT, 'js/views/home.js'), 'utf8');
+  const condSrc = fs.readFileSync(path.join(ROOT, 'js/views/conditions.js'), 'utf8');
+  const css = fs.readFileSync(path.join(ROOT, 'css/app.css'), 'utf8');
+  ok('store 初始化收藏集合', /this\.favorites = new Set\(\)/.test(storeSrc) && /getMeta\('favorites'/.test(storeSrc));
+  ok('store 提供收藏方法', /async toggleBookmark\(type, id\)/.test(storeSrc) && /isBookmarked\(type, id\)/.test(storeSrc));
+  ok('备份包含收藏', /favorites: \[\.\.\.store\.favorites\]/.test(backupSrc) && /favorites: Array\.isArray/.test(backupSrc));
+  ok('store 手动保存写收藏', /setMeta\('favorites'/.test(storeSrc));
+  ok('store 重置清空收藏', /this\.favorites = new Set\(\);/.test(storeSrc));
+  ok('首页渲染食谱本区块', /favBookSection/.test(homeSrc) && /我的食谱本/.test(homeSrc));
+  ok('详情页有收藏按钮', /data-fav-type/.test(homeSrc) && /bindFav/.test(homeSrc));
+  ok('茶饮卡片有收藏按钮', /data-fav-type="tea"/.test(condSrc) && /toggleBookmark\('tea'/.test(condSrc));
+  ok('css 有收藏按钮样式', /\.fav-btn/.test(css) && /\.fav-sm/.test(css));
+}
+
 // ---------- 2. 内容数据 ----------
 section('内容数据');
 const substances = (await import(pathToFileURL(path.join(ROOT, 'js/data/substances.js')).href)).SUBSTANCES;

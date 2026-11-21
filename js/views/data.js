@@ -205,6 +205,7 @@ function bind(view) {
           settings: pendingRestore.settings,
           posts: pendingRestore.posts,
           identifications: pendingRestore.identifications,
+          favorites: pendingRestore.favorites,
         });
         pendingRestore = null;
         toast('已从备份恢复', 'ok');

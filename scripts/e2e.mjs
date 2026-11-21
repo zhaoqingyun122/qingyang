@@ -646,6 +646,52 @@ async function main() {
   ok('可切回标准字号', back.value === false, JSON.stringify(back));
   }
 
+  if (want('收藏')) {
+  console.log('\n[收藏与食谱本]');
+  await goto('/', 1000);
+  // 进入第一个物质详情
+  const href = await evaluate(`document.querySelector('.sub-card')?.getAttribute('href') || ''`);
+  await goto(String(href.value || '/'), 900);
+  const name = await evaluate(`document.querySelector('.detail-head h1')?.textContent || ''`);
+  ok('详情页标题存在', !!name.value, JSON.stringify(name));
+  const favBtn = await evaluate(`document.querySelector('[data-fav-type]')?.textContent || ''`);
+  ok('详情页有收藏按钮', favBtn.value.length > 0, JSON.stringify(favBtn));
+  await evaluate(`document.querySelector('[data-fav-type]').click()`);
+  await new Promise((r) => setTimeout(r, 700));
+  const onState = await evaluate(`(() => {
+    const b = document.querySelector('[data-fav-type]');
+    return { on: b?.classList.contains('on'), txt: b?.textContent || '' };
+  })()`);
+  ok('点击后进入已收藏状态', onState.value?.on === true, JSON.stringify(onState));
+  ok('收藏按钮文本更新', (onState.value?.txt || '').includes('已收藏'), JSON.stringify(onState.value?.txt));
+  // 刷新详情页：收藏持久化到本机数据库
+  await send('Page.reload', {});
+  await new Promise((r) => setTimeout(r, 1500));
+  const keptBtn = await evaluate(`(() => { const b = document.querySelector('[data-fav-type]'); return { on: b?.classList.contains('on'), txt: b?.textContent || '' }; })()`);
+  ok('刷新后收藏状态保留', keptBtn.value?.on === true, JSON.stringify(keptBtn));
+  // 首页出现「我的食谱本」
+  await goto('/', 1000);
+  const book = await evaluate(`(() => {
+    const sec = [...document.querySelectorAll('.panel')].find((p) => (p.querySelector('.panel-head h2')?.textContent || '').includes('我的食谱本'));
+    return sec ? sec.textContent : '';
+  })()`);
+  ok('首页出现我的食谱本', book.value.includes('我的食谱本'), JSON.stringify(book.value.slice(0, 60)));
+  // 刷新后仍在
+  await send('Page.reload', {});
+  await new Promise((r) => setTimeout(r, 1300));
+  await goto('/', 1000);
+  const book2 = await evaluate(`document.body.textContent.includes('我的食谱本')`);
+  ok('刷新后食谱本保留', book2.value === true, JSON.stringify(book2));
+  // 取消收藏后消失
+  await goto(String(href.value || '/'), 900);
+  await evaluate(`document.querySelector('[data-fav-type]')?.click()`);
+  await new Promise((r) => setTimeout(r, 700));
+  await goto('/', 1000);
+  const gone = await evaluate(`document.body.textContent.includes('我的食谱本')`);
+  ok('取消收藏后食谱本消失', gone.value === false, JSON.stringify(gone));
+  await shot('16-favorites');
+  }
+
   console.log('\n[错误检查]');
   const errs = consoleErrors.filter((e) => !/favicon|Download the React/i.test(e));
   ok('全流程无 JS 运行时异常', errs.length === 0, errs.slice(0, 5).join(' | '));

@@ -1,0 +1,267 @@
+# -*- coding: utf-8 -*-
+"""生成《人工智能基础与应用》课程 AI 交互记录（青养项目附件）。
+
+按课程要求「以附件形式提交完整交互过程，并标注关键迭代节点」，
+依据真实 git 提交历史与开发过程整理为结构化文档。
+输出：项目目录下的《AI交互记录-青养.docx》
+"""
+from docx import Document
+from docx.shared import Pt, Cm, RGBColor
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
+from docx.oxml.ns import qn
+from docx.enum.table import WD_TABLE_ALIGNMENT
+
+OUT = r"C:\Users\小新AIR\Documents\qingyunapp\《AI交互记录-青养》.docx"
+GREEN = RGBColor(0x2E, 0x6E, 0x49)
+GRAY = RGBColor(0x66, 0x66, 0x66)
+
+doc = Document()
+for s in doc.sections:
+    s.top_margin = Cm(2.54)
+    s.bottom_margin = Cm(2.54)
+    s.left_margin = Cm(2.4)
+    s.right_margin = Cm(2.4)
+
+
+def set_ea(run, name):
+    run.font.name = name
+    rPr = run._element.get_or_add_rPr()
+    rFonts = rPr.get_or_add_rFonts()
+    rFonts.set(qn('w:eastAsia'), name)
+
+
+def para(text='', font='宋体', size=12, bold=False, align=None, color=None,
+         space_before=0, space_after=6, line=1.5, indent=True):
+    p = doc.add_paragraph()
+    pf = p.paragraph_format
+    pf.space_before = Pt(space_before)
+    pf.space_after = Pt(space_after)
+    pf.line_spacing = line
+    if indent and text:
+        pf.first_line_indent = Pt(size * 2)
+    if align is not None:
+        pf.alignment = align
+    if text:
+        r = p.add_run(text)
+        set_ea(r, font)
+        r.font.size = Pt(size)
+        r.font.bold = bold
+        if color:
+            r.font.color.rgb = color
+    return p
+
+
+def h1(text):
+    return para(text, font='黑体', size=16, bold=True, space_before=14, space_after=8, indent=False)
+
+
+def h2(text):
+    return para(text, font='黑体', size=13, bold=True, space_before=10, space_after=6, indent=False)
+
+
+def body(text):
+    return para(text, size=12)
+
+
+def kv(header, text):
+    p = doc.add_paragraph()
+    pf = p.paragraph_format
+    pf.space_after = Pt(4)
+    pf.line_spacing = 1.4
+    r1 = p.add_run(header)
+    set_ea(r1, '黑体')
+    r1.font.size = Pt(12)
+    r1.font.bold = True
+    r1.font.color.rgb = GREEN
+    r2 = p.add_run(text)
+    set_ea(r2, '宋体')
+    r2.font.size = Pt(12)
+    return p
+
+
+# ================= 封面 =================
+para('《人工智能基础与应用》', font='黑体', size=22, align=WD_ALIGN_PARAGRAPH.CENTER, space_before=60, space_after=18, indent=False)
+para('AI 交 互 记 录', font='黑体', size=26, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=36, indent=False)
+cover = [
+    ('实验名称：', '食疗增益——青养'),
+    ('学    号：', '26020080199'),
+    ('姓    名：', '赵清云'),
+    ('班    级：', '食品工程2603班'),
+]
+for k, v in cover:
+    p = doc.add_paragraph()
+    p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.paragraph_format.space_after = Pt(12)
+    r1 = p.add_run(k)
+    set_ea(r1, '宋体')
+    r1.font.size = Pt(14)
+    r2 = p.add_run(v)
+    set_ea(r2, '宋体')
+    r2.font.size = Pt(14)
+    r2.font.bold = True
+    r2.font.underline = True
+para('本附件为课程要求提交的「AI 交互记录」，按关键迭代节点整理交互过程，'
+     '可与作品代码仓库（github.com/zhaoqingyun122/qingyang）逐提交对照验证。',
+     size=11, color=GRAY, align=WD_ALIGN_PARAGRAPH.CENTER, space_before=30, indent=False)
+doc.add_page_break()
+
+# ================= 一、记录说明 =================
+h1('一、记录说明')
+body('本记录依据作品开发全过程的真实交互整理而成。开发中使用的 AI 工具为 DeepSeek（对话式大模型），'
+     '交互方式为持续多轮对话：由本人提出需求与要求，AI 输出方案、代码与建议，本人审查、取舍、验收后进入下一轮。')
+body('为便于呈现"作品如何从初稿逐步完善"，本记录采用「关键迭代节点」的标注形式：每个节点说明当时的目标、'
+     '向 AI 提出的要求（提示词要点）、AI 的输出、本人的判断与取舍，以及最终效果（对应 git 提交，可随时核对）。'
+     '完整逐字对话保存在本人 DeepSeek 客户端的会话记录中，如需可导出原文附于本记录之后（方法见第五节）。')
+para()
+h2('阅读与核对方式')
+body('作品代码托管于 github.com/zhaoqingyun122/qingyang。本记录第三部分每个节点均标注了对应的 git 提交号，'
+     '可在仓库提交历史中直接核对"这一轮改了什么、测试是什么、结果如何"；节点顺序即开发顺序，'
+     '对应仓库 main 分支自 28e22e7（初稿）至 8ab3c81（完成）共 19 次提交的演进过程。')
+
+# ================= 二、总体演进时间线 =================
+h1('二、总体演进时间线')
+body('作品的演进可归纳为五个阶段，共 19 次提交，从"可运行的初稿"逐步打磨到"可直接交付的课程作品"：')
+
+rows = [
+    ('阶段', '提交', '内容'),
+    ('① 初稿构建', '28e22e7', 'PRD 验收通过：四模块（鉴别百科/身体状况/社区/数据管理）初版成型，selftest 517 项 + e2e 50 项全绿'),
+    ('② 功能补全', '9df64cf / 3854ca5 / 56ecb52', '就医导航、状况-泡茶（12 款茶饮，成人/青少年份量）、手动保存按钮'),
+    ('③ 修复与基建', '242b2d1 / bf44cd8 / 313351e', '修复双击启动脚本、补充 GitHub Pages 发布资源、修正误提交文件'),
+    ('④ 体验提升', 'ac96a83 / f947ce9 / 8ca3280', 'PWA 安装化、深色模式、字号调节'),
+    ('⑤ 打磨完善', 'c35e85a 起至 8ab3c81', '收藏食谱本、每日打卡、购物清单、无黑窗口启动、新用户引导，随后全量回归与文档交付'),
+]
+tbl = doc.add_table(rows=len(rows), cols=3)
+tbl.style = 'Table Grid'
+tbl.alignment = WD_TABLE_ALIGNMENT.CENTER
+widths = (Cm(3.2), Cm(5.2), Cm(9.0))
+for ri, row in enumerate(rows):
+    for ci, val in enumerate(row):
+        cell = tbl.cell(ri, ci)
+        cell.width = widths[ci]
+        cp = cell.paragraphs[0]
+        cp.paragraph_format.space_before = Pt(2)
+        cp.paragraph_format.space_after = Pt(2)
+        r = cp.add_run(val)
+        set_ea(r, '宋体')
+        r.font.size = Pt(10.5)
+        if ri == 0:
+            r.font.bold = True
+para('总计：从初稿到课程交付共 19 次提交，静态自测从 517 项增长到 661 项，端到端测试从 50 项增长到 103 项，全部通过。',
+     size=11, color=GRAY, space_before=6)
+
+# ================= 三、关键迭代节点 =================
+h1('三、关键迭代节点详述')
+
+def node(no, title, goal, prompt, ai_out, decide, result):
+    h2(f'节点 {no}：{title}')
+    kv('本轮目标：', goal)
+    kv('向 AI 提出的要求（提示词要点）：', prompt)
+    kv('AI 的输出：', ai_out)
+    kv('本人的判断与取舍：', decide)
+    kv('结果与验证：', result)
+    para()
+
+node('1', '需求分析与初稿构建',
+     '明确"做一个离线可用的食疗健康小应用"，形成可验收的第一版。',
+     '"为家庭做一个食疗健康 Web 应用：药食同源物质鉴别、成人/青少年分龄剂量、对症药膳；不要后端、数据保存在本机。"',
+     'AI 输出四模块构想（物质鉴别百科、身体状况对症药膳、药膳社区、数据管理）与"先鉴别再吃"的产品主张，'
+     '并给出零依赖纯前端 + IndexedDB 的架构方案。',
+     '本人采纳四模块与"先鉴别再吃"定位，并补充两条关键规则：成人/青少年剂量必须分开呈现；数据必须只保存在本机浏览器。'
+     '数据（物质、状况、药膳、茶饮等）在 AI 辅助下逐一结构化整理并人工核对剂量与禁忌口径。',
+     '初版完成并通过验收：静态自测 517 项、端到端 50 项全绿（提交 28e22e7）。')
+
+node('2', '功能补全：就医导航 / 泡茶 / 手动保存',
+     '完善"状况→建议→行动"链路：什么情况该就医、平时可喝什么茶、数据如何及时保存。',
+     '"补充三类功能：状况页给出就医建议（就诊科室/警示信号/就诊前准备）；列出适合各状况的泡茶配方并区分成人/青少年份量；数据页增加手动保存按钮。"',
+     'AI 输出就医导航数据结构与页面、12 款茶饮配方（每款含成人/青少年份量）、手动保存及保存时间反馈逻辑。',
+     '本人逐条核对就医警示信号与泡茶份量的准确性，确认"泡茶也分龄"与整体口径一致后合并。',
+     '三项功能上线并回归通过，端到端截图更新（提交 9df64cf、3854ca5、56ecb52、b8bf274）。')
+
+node('3', '启动与发布基建修复',
+     '修复"双击打不开"问题，并补齐 GitHub Pages 发布资源与仓库卫生。',
+     '"启动脚本双击后无反应，请定位原因并修复；随后补充 GitHub Pages 发布所需资源；误提交的课程报告文件需要移出版本库。"',
+     'AI 定位：启动脚本为 GBK+CRLF 编码且依赖系统 Node，双击时因编码与路径问题失败；给出自动探测 Node、脚本容错、'
+     '本地服务器防崩溃的修复。同时生成 PWA 图标（Python+Pillow）与 web/ 发布副本结构，将 *.docx 加入 .gitignore。',
+     '本人确认脚本修复方案（保留 GBK+CRLF 编码兼容性）并指导发布副本与源码同步规则。',
+     '双击启动恢复正常；发布副本 web/ 就绪；移除误提交文件并补充忽略规则（提交 242b2d1、bf44cd8、313351e）。')
+
+node('4', '体验提升：PWA / 深色模式 / 字号调节',
+     '让应用"可安装、可离线、更护眼、更适老"。',
+     '"按这三点改进：支持安装到桌面并在断网时使用；设置页增加深色模式开关；文字大小提供标准/大/特大三档且持久化。"',
+     'AI 输出 manifest + Service Worker（network-first 离线缓存）、深色模式（body 样式类 + 设置持久化）、'
+     '字号三档（CSS zoom 与降级方案），并为深色模式补齐全部配色变量。',
+     '本人按"改动最小、不影响既有功能"审查：深色与字号均通过设置事件即时生效，持久化到 IndexedDB；'
+     '确认 PWA 离线策略为在线取新、断网回退。',
+     '三项体验改进上线并配套新增自测断言（提交 ac96a83、f947ce9、8ca3280）。')
+
+node('5', '收藏食谱本：真实缺陷的定位与修复（重要节点）',
+     '实现"物质/药膳/茶饮可收藏、首页聚合为我的食谱本"，并确保功能真正生效。',
+     '"在详情页增加收藏按钮，首页增加我的食谱本聚合区；收藏状态刷新后保留，并随备份携带。"',
+     'AI 生成收藏逻辑与界面；但端到端测试发现点击收藏后界面没有任何反应，且刷新后收藏丢失。'
+     'AI 协助排查：新增的收藏方法与既有"帖子收藏"方法同名（toggleFavorite），类内后定义将旧方法覆盖，'
+     '新功能被静默替换为无操作。',
+     '本人坚持"先让测试抓到原因再改代码"：根因为方法名冲突，决定将新方法改为独立命名 toggleBookmark / isBookmarked，'
+     '并同步修改三处调用点与测试断言，避免再次冲突。',
+     '修复后收藏功能 9 项端到端断言全部通过，刷新保留与备份携带均验证成功（提交 c35e85a 经多次迭代后合入）。'
+     '这是 AI 生成代码存在隐性缺陷、必须依靠自动化测试兜底的代表性案例。')
+
+node('6', '每日调理打卡',
+     '提供"坚持调理"的记录工具：每日打卡 + 14 天日历 + 备注。',
+     '"在首页增加每日调理打卡：打卡按钮、今天日历格点亮、当天可写备注、历史 14 天一目了然，数据随备份携带。"',
+     'AI 输出打卡数据模型（IndexedDB 新表 + 版本升级）、14 天日历条渲染、备注保存/删除逻辑与备份兼容修改。',
+     '本人确认打卡记录按日期聚合、重复打卡覆盖更新、删除后当天恢复未打卡状态等行为口径。',
+     '打卡功能 10 项端到端断言全部通过，IndexedDB 升级 v2 无迁移问题（提交 8ad8089）。')
+
+node('7', '药膳购物清单导出',
+     '把收藏药膳的用料一键变成可执行的购物清单。',
+     '"做一个购物清单：汇总我收藏药膳的所有用料，同一种用料合并并尽量估算合计用量，支持复制与下载 txt；水类不算购物项。"',
+     'AI 输出用料解析与合并算法（按主干名称分组、同单位数量求和）、弹窗展示、复制/下载实现。',
+     '本人审查合并规则：排除沸水/清水等水类用料；对不同写法（如"5g"与"少许"）保守处理，无法合并时原样列出并标注出处药膳。',
+     '清单功能端到端 6 项断言全过；另修复了"页面停留在首页时收藏后需整页刷新重渲染"的测试时序问题（提交 73115ee、aaf982c）。')
+
+node('8', '无黑窗口启动',
+     '解决"启动时弹出黑色命令行窗口"的启动体验问题。',
+     '"双击启动时不要闪黑窗口；不应影响原有 cmd 启动方式。"',
+     'AI 方案：新增 VBS 启动器（WScript 隐藏窗口运行本地服务器，窗口模式为 0），并保留原 cmd；'
+     'VBS 内复用 cmd 的 Node 探测逻辑，服务器自动打开默认浏览器。',
+     '本人确认 VBS 编码（GBK，含中文提示）与 cmd 保留策略，并实机验证：wscript 启动后服务器正常响应 200、'
+     '无控制台窗口、测试后进程正确清理。',
+     '无黑窗口启动实机验证通过，配套新增自测断言（提交 8284a37）。')
+
+node('9', '新用户引导',
+     '让第一次打开的用户快速理解四个模块的用途。',
+     '"首次打开显示一个引导层，介绍四个模块各有什么用；看过一次后不再打扰。"',
+     'AI 输出独立引导模块（首次打开弹出四模块卡片式介绍），并把"是否已看过"记入本地存储。',
+     '本人确认引导层仅在首次显示、可点遮罩或按 Esc 关闭、重置数据后可再次看到；采用存储标记而非每次弹出。',
+     '引导功能端到端 6 项断言全过（首次显示→关闭→刷新不再出现，提交 97347f4）。')
+
+node('10', '全量回归与课程交付',
+     '验收前的最终回归与文档交付，确保提交的一切可复现、可访问。',
+     '"做一次完整回归：全部功能按真实操作顺序跑一遍；随后补齐课程要求的 README、实验报告与 AI 交互记录。"',
+     'AI 先修复了购物清单测试在"整组连续运行"时会因页面 hash 未变不重渲染而失败的问题（强制整页刷新纳入新收藏），'
+     '然后全量回归：静态自测 661 项、端到端 103 项全部通过；生成验收截图；完善 README（简介/运行/测试/部署/制作说明）。',
+     '本人核对了 README 与实际操作一致，确认发布分支（gh-pages）与本地发布副本逐文件一致；'
+     '报告与本文档依据真实过程整理并核对提交号。',
+     '全量回归通过，main 分支共 19 次提交全部推送；发布副本同步至 gh-pages 分支，待网页端启用 Pages 后公开访问'
+     '（提交 aaf982c、77be29f、8ab3c81）。')
+
+# ================= 四、AI 输出质量观察 =================
+h1('四、AI 输出质量观察')
+body('成功经验：AI 在方案生成、代码骨架、测试用例设计、数据结构化整理方面效率极高，'
+     '把"从想法到可运行应用"的周期压缩到可日常迭代的程度；清晰的约束（零依赖、分龄剂量、数据本地、测试先行）'
+     '显著提升了输出与预期的吻合度。')
+body('暴露的问题：AI 生成的代码存在隐蔽缺陷——最典型的是收藏功能因方法同名被类内覆盖而"静默失效"，'
+     '界面无报错、功能直接不生效，若没有端到端测试很难发现；此外不同轮次对同一要求的理解存在出入，'
+     '需要持续对齐（如打卡口径、清单合并规则）。')
+body('应对方法：坚持"完成一项功能 → 先写测试 → 测试通过 → 再提交"的纪律；剂量、禁忌等安全信息一律人工核对，'
+     '不直接采信 AI 生成内容；对关键算法（分龄剂量、购物清单合并）要求 AI 说明规则并逐条验收。'
+     '这套方法让 19 次提交的每一步都有测试与提交号可追溯。')
+
+# ================= 五、如何补充完整逐字记录 =================
+h1('五、完整逐字对话记录的补充方式')
+body('本记录为结构化整理版本（每个节点含目标、提示词要点、AI 输出、本人取舍与结果），用于呈现"从初稿到完善"的演进过程。'
+     '若需要提交逐字完整对话，可在 DeepSeek 客户端中打开本作品对应的会话（"青养"开发会话），'
+     '按会话顶部导出/复制功能保存为文本，附于本记录之后一并提交；两版内容一一对应，可互为索引。')
+
+doc.save(OUT)
+print('done')

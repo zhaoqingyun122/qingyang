@@ -35,6 +35,8 @@ const ONLY_KINDS = (() => {
   return i >= 0 ? new Set(String(args[i + 1] || '').split(',').map((s) => s.trim()).filter(Boolean)) : null;
 })();
 const REFRESH = args.includes('--refresh');
+// --shopping：改用购物图源（淘宝/1688/京东商品主图，实物拍摄），主要给药材用
+const SHOP_MODE = args.includes('--shopping');
 // --only herbs-shan-yao,dishes-si-shen-tang：只处理指定条目（配合 --refresh 可单条重抓）
 const ONLY_KEYS = (() => {
   const i = args.indexOf('--only');
@@ -94,6 +96,21 @@ function parseEntities(file, quote) {
   return out;
 }
 
+// 购物模式下给容易混淆的条目更精确的搜词（如 小米 → 黄小米杂粮，而不是小米手机）
+const SHOP_HINT = {
+  'xiao-mi': '黄小米 五谷杂粮 真空',
+  'yan-mai': '燕麦片 即食 杂粮',
+  'hei-zhi-ma': '黑芝麻 生 杂粮',
+  'chi-xiao-dou': '赤小豆 长粒 杂粮',
+  'bai-bian-dou': '白扁豆 杂粮 干货',
+  'long-yan-rou': '桂圆肉 无核 干货',
+  'ju-hua': '杭白菊 胎菊 干货',
+  'ge-gen': '葛根片 干货 中药材',
+  'lv-dou': '绿豆 杂粮 干货',
+  'hei-dou': '黑豆 杂粮 干货',
+  'huang-qi': '黄芪片 中药材 干货',
+};
+
 const KINDS = [
   {
     kind: 'herbs',
@@ -101,6 +118,13 @@ const KINDS = [
     quote: 'double',
     // 药材用「名称 + 中药材」最准；再试中药饮片与别名（如 龙眼肉/桂圆）
     queries: (e) => {
+      if (SHOP_MODE) {
+        const hint = SHOP_HINT[e.id];
+        const list = hint ? [`${hint} 淘宝`, hint, `${hint} 1688`] : [];
+        // 通用商品词兜底（1688 商品图通常带「干货/中药材/500g」字样）
+        list.push(`${e.name} 干货 中药材 淘宝`, `${e.name} 500g`, `${e.name} 中药材 1688`);
+        return list;
+      }
       const list = [`${e.name} 中药材`, `${e.name} 药材图谱`, `${e.name} 中药大全`, `${e.name} 360百科`];
       for (const a of (e.aliases || []).slice(0, 2)) list.push(`${a} 中药材`);
       return list;
@@ -125,7 +149,16 @@ const CONFUSABLE = {
   葛根: ['葛花'],
   肉桂: ['桂枝', '桂皮'],
   麦冬: ['土麦冬'],
+  小米: ['小米手机', '小米椒', '小米电视', '小米笔记本', '小米粥', '小米饭', '小米空气'],
+  百合: ['百合花', '百合网'],
+  莲子: ['莲子心', '莲子羹'],
+  山楂: ['山楂片', '山楂糕', '糖葫芦'],
+  生姜: ['生姜洗发', '生姜红糖'],
 };
+
+// 购物平台图片 CDN（商品主图基本都是实物拍摄，且这些域名走 HTTP 可达）
+const SHOP_HOSTS = ['alicdn.com', 'taobao.com', 'tmall.com', '1688.com', '360buyimg.com', 'jd.com', 'suning.com', 'yhd.com'];
+const SHOP_WORDS = ['中药材', '中药', '药材', '饮片', '干货', '杂粮', '五谷', '正宗', '农家', '原产地', '野生', '无硫', '散装'];
 
 /** 从结果页解析 [{murl, t, purl}] */
 function parseResults(html) {
@@ -177,17 +210,33 @@ function score(item, e, kind) {
     if (GOOD_HERB.some((w) => t.includes(w) || p.includes(w))) s += 2;
     if (REF_HERB.test(t) || REF_HERB.test(p)) s += 4;
     if (/药典/.test(t) || /药典/.test(p)) s += 2;
-    // 商品/包装页与菜谱页降权
-    if (/(菜谱|美食|好吃|价格|优惠|批发|加盟|旗舰店|多少|禁忌|副作用|袋装|瓶装|包邮|现货|土特产|\d+\s*(g|克|斤|kg))/.test(t)) s -= 3;
-    // 形近但不同种：出现"土茯苓""野菊花"等直接重罚
-    const confusable = CONFUSABLE[e.name] || [];
-    if (confusable.some((c) => t.includes(c) || p.includes(c))) s -= 6;
     let host = '';
     try {
       host = new URL(p).hostname;
     } catch {
       /* ignore */
     }
+    // 购物图源模式：收商品图（来源页或图片本身在购物平台 CDN 即可，比价站也算）
+    if (SHOP_MODE) {
+      let mhost = '';
+      try {
+        mhost = new URL(item.murl).hostname;
+      } catch {
+        /* ignore */
+      }
+      if (!SHOP_HOSTS.some((d) => host.includes(d) || mhost.includes(d))) return -99;
+      let shopScore = 4;
+      if (SHOP_WORDS.some((w) => t.includes(w) || p.includes(w))) shopScore += 2;
+      if (/淘宝|天猫|1688|京东/.test(t)) shopScore += 1;
+      const conf = CONFUSABLE[e.name] || [];
+      if (conf.some((c) => t.includes(c) || p.includes(c))) shopScore -= 8;
+      return shopScore;
+    }
+    // 商品/包装页与菜谱页降权
+    if (/(菜谱|美食|好吃|价格|优惠|批发|加盟|旗舰店|多少|禁忌|副作用|袋装|瓶装|包邮|现货|土特产|\d+\s*(g|克|斤|kg))/.test(t)) s -= 3;
+    // 形近但不同种：出现"土茯苓""野菊花"等直接重罚
+    const confusable = CONFUSABLE[e.name] || [];
+    if (confusable.some((c) => t.includes(c) || p.includes(c))) s -= 6;
     if (TRUSTED.some((d) => host.includes(d))) s += 2;
     return s;
   }
@@ -333,6 +382,7 @@ async function run() {
         console.log(`  [${done}/${all.length}] 搜索失败 ${q}: ${err.message}`);
         continue;
       }
+      if (process.env.QY_DEBUG) console.log(`    debug「${q}」候选 ${cands.length} 条` + (cands[0] ? ` 最高「${cands[0].t.slice(0, 30)}」s=${cands[0].score}` : ''));
       if (!best && cands.length) best = cands[0];
       for (const c of cands.slice(0, 8)) {
         const got = await downloadBest(c);

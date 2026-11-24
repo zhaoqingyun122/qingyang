@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-24T13:25:07.789Z",
+  "generatedAt": "2026-11-24T14:01:17.503Z",
   "note": "图片来自 Bing 图片搜索的公开网页图片（按标题关联筛选），仅用于课程演示与学习，版权归原作者所有。",
   "items": {
     "herbs-shan-yao": {
@@ -84,8 +84,14 @@
       "kind": "herbs",
       "id": "long-yan-rou",
       "name": "龙眼肉",
-      "source": "",
-      "ok": false
+      "source": "http://cbu01.alicdn.com/img/ibank/O1CN01qtOC8v1uzVsbH0uR7_!!2211769676108-0-cib.jpg",
+      "page": "https://detail.1688.com/offer/656575932851.html",
+      "title": "【紫轩堂】龙眼肉桂圆肉500g新货上市量大从优实物拍摄中药材批发-阿里巴巴",
+      "score": 6,
+      "query": "龙眼肉 中药材 1688",
+      "via": "origin",
+      "bytes": 854657,
+      "ok": true
     },
     "herbs-bai-he": {
       "kind": "herbs",
@@ -104,22 +110,40 @@
       "kind": "herbs",
       "id": "hei-zhi-ma",
       "name": "黑芝麻",
-      "source": "",
-      "ok": false
+      "source": "http://cbu01.alicdn.com/img/ibank/O1CN01dRgJXb1hdS5qHD6wF_!!2218009264300-0-cib.310x310.jpg",
+      "page": "https://detail.1688.com/offer/854897117036.html",
+      "title": "新货生黑芝麻500g 油麻更香颗粒饱满干净无染色农家炒熟黑芝麻5斤-阿里巴巴",
+      "score": 6,
+      "query": "黑芝麻 生芝麻 500g 淘宝",
+      "via": "origin",
+      "bytes": 48114,
+      "ok": true
     },
     "herbs-hei-dou": {
       "kind": "herbs",
       "id": "hei-dou",
       "name": "黑豆",
-      "source": "",
-      "ok": false
+      "source": "http://cbu01.alicdn.com/img/ibank/O1CN01eiBv3r1kGVBiUpFrZ_!!2219144534656-0-cib.310x310.jpg",
+      "page": "https://detail.1688.com/offer/990120950241.html",
+      "title": "黑豆500g干货黑豆批发代发中药材大全-阿里巴巴",
+      "score": 6,
+      "query": "黑豆 干货 中药材 淘宝",
+      "via": "origin",
+      "bytes": 52124,
+      "ok": true
     },
     "herbs-chi-xiao-dou": {
       "kind": "herbs",
       "id": "chi-xiao-dou",
       "name": "赤小豆",
-      "source": "",
-      "ok": false
+      "source": "http://cbu01.alicdn.com/img/ibank/O1CN014EQuWU1I73NZ8K37z_!!2155080845-0-cib.jpg,https://cbu01.alicdn.com/img/ibank/21420832815_209813707.jpg,https://cbu01.alicdn.com/img/ibank/21345405364_209813707.jpg,https://cbu01.alicdn.com/img/ibank/21345393684_209813707.jpg,https://cbu01.alicdn.com/img/ibank/21420835852_209813707.jpg",
+      "page": "https://detail.1688.com/offer/561127656662.html",
+      "title": "赤小豆散装500g新货五谷杂粮红豆药食同源长粒赤小豆芡实红豆薏米-阿里巴巴",
+      "score": 6,
+      "query": "赤小豆 长粒 500g 淘宝",
+      "via": "origin",
+      "bytes": 280821,
+      "ok": true
     },
     "herbs-lv-dou": {
       "kind": "herbs",
@@ -138,13 +162,13 @@
       "kind": "herbs",
       "id": "xiao-mi",
       "name": "小米",
-      "source": "http://pic.kts.g.mi.com/624f36edba48744816ee436d814fad331996147818255332713.jpg",
-      "page": "https://game.xiaomi.com/viewpoint/1457661188_1727121207488_16",
-      "title": "圣女阿初进侠缘！逆水寒玩家：难怪建模这么精致，原来是要跟我谈资讯-小米游戏中心",
-      "score": 3,
-      "query": "小米 药材图谱",
+      "source": "http://cbu01.alicdn.com/img/ibank/O1CN01lYhoWi2Lmgfsmvvgl_!!2218297729735-0-cib.310x310.jpg",
+      "page": "https://detail.1688.com/offer/818395935086.html",
+      "title": "山味津朝阳黄小米正宗小米真空袋装新米粘五谷杂粮粗粮500g真空装-阿里巴巴",
+      "score": 6,
+      "query": "黄小米 五谷杂粮 真空 淘宝",
       "via": "origin",
-      "bytes": 94343,
+      "bytes": 45733,
       "ok": true
     },
     "herbs-yan-mai": {
@@ -216,8 +240,14 @@
       "kind": "herbs",
       "id": "bai-bian-dou",
       "name": "白扁豆",
-      "source": "",
-      "ok": false
+      "source": "http://cbu01.alicdn.com/img/ibank/9087118998_546410515.310x310.jpg",
+      "page": "https://detail.1688.com/offer/573204422734.html",
+      "title": "白扁豆中药材农家云南老品种白扁豆中药炒熟白扁豆药用新货包邮-阿里巴巴",
+      "score": 6,
+      "query": "白扁豆 中药材 1688",
+      "via": "origin",
+      "bytes": 58452,
+      "ok": true
     },
     "herbs-fu-ling": {
       "kind": "herbs",
@@ -262,8 +292,14 @@
       "kind": "herbs",
       "id": "ju-hua",
       "name": "菊花",
-      "source": "",
-      "ok": false
+      "source": "http://cbu01.alicdn.com/img/ibank/2017/136/226/7646622631_2101210281.jpg",
+      "page": "https://detail.1688.com/offer/538301715320.html",
+      "title": "批发中药材菊花-阿里巴巴",
+      "score": 6,
+      "query": "菊花 干货 中药材 淘宝",
+      "via": "origin",
+      "bytes": 751701,
+      "ok": true
     },
     "herbs-jin-yin-hua": {
       "kind": "herbs",
@@ -321,8 +357,14 @@
       "kind": "herbs",
       "id": "ge-gen",
       "name": "葛根",
-      "source": "",
-      "ok": false
+      "source": "http://cbu01.alicdn.com/img/ibank/O1CN01cy4yZw1yhR3eUJLkE_!!2219843486610-0-cib.310x310.jpg",
+      "page": "https://detail.1688.com/offer/952160255855.html",
+      "title": "葛根中药材官方旗舰店500g克新鲜葛根片块泡水喝的功效与作用-阿里巴巴",
+      "score": 6,
+      "query": "葛根 片 中药材 淘宝",
+      "via": "origin",
+      "bytes": 77767,
+      "ok": true
     },
     "herbs-ku-qiao": {
       "kind": "herbs",
@@ -341,8 +383,14 @@
       "kind": "herbs",
       "id": "huang-jing",
       "name": "黄精",
-      "source": "",
-      "ok": false
+      "source": "http://cbu01.alicdn.com/img/ibank/O1CN01RQCJn01dqxGiYi9k2_!!2218256463788-0-cib.jpg?x-oss-process=image/format,png",
+      "page": "https://detail.1688.com/offer/886108728560.html",
+      "title": "生黄精正宗九华山黄精片泡水酒无硫中药材黄精大货批发-阿里巴巴",
+      "score": 6,
+      "query": "黄精 中药材 淘宝",
+      "via": "origin",
+      "bytes": 146383,
+      "ok": true
     },
     "herbs-yu-zhu": {
       "kind": "herbs",
@@ -465,13 +513,13 @@
       "kind": "herbs",
       "id": "zi-su",
       "name": "紫苏叶",
-      "source": "http://ts3.mm.bing.net/th?id=OIP.vsubr3byeQzeOcYcl-0GIQAAAA&pid=15.1",
-      "page": "http://zhongyaocai360.com/z/zisu.html",
-      "title": "紫苏（图）_【中药材大全】中药大全",
-      "score": 11,
-      "query": "紫苏叶 中药材",
-      "via": "thumb",
-      "bytes": 16599,
+      "source": "http://cbu01.alicdn.com/img/ibank/2017/317/363/4462363713_1373589733.jpg",
+      "page": "https://detail.1688.com/offer/521059602801.html",
+      "title": "紫苏中药材批发紫苏紫苏叶烧虾蟹佐料紫背紫苏一件代发QU腥-阿里巴巴",
+      "score": 6,
+      "query": "紫苏叶 干货 中药材 淘宝",
+      "via": "origin",
+      "bytes": 618378,
       "ok": true
     },
     "dishes-shan-yao-yi-mi-zhou": {
@@ -959,8 +1007,14 @@
       "kind": "teas",
       "id": "mai-dong-yu-zhu-cha",
       "name": "麦冬玉竹茶",
-      "source": "",
-      "ok": false
+      "source": "http://cbu01.alicdn.com/img/ibank/O1CN01pErEst1elk9Ajowm9_!!2209115813912-0-cib.jpg",
+      "page": "https://detail.1688.com/offer/683593842942.html",
+      "title": "四川麦冬中药材500杭麦门冬麦东茶沙参玉竹泡水麦冬绵阳产地直发-阿里巴巴",
+      "score": 5,
+      "query": "麦冬玉竹茶",
+      "via": "origin",
+      "bytes": 161172,
+      "ok": true
     },
     "teas-jue-ming-zi-cha": {
       "kind": "teas",

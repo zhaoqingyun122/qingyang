@@ -24,6 +24,8 @@ def main():
     sp = os.path.join(ASSETS, '_sources.json')
     if os.path.exists(sp):
         sources = json.load(open(sp, encoding='utf-8')).get('items', {})
+    ph_path = os.path.join(ASSETS, '_placeholders.json')
+    placeholders = set(json.load(open(ph_path, encoding='utf-8'))) if os.path.exists(ph_path) else set()
 
     sections = []
     total = 0
@@ -38,7 +40,7 @@ def main():
             total += 1
             meta = sources.get(f'{kind}-{eid}', {})
             title = meta.get('title') or ''
-            placeholder = not meta.get('ok')
+            placeholder = (f'{kind}-{eid}' in placeholders) or (not meta.get('ok'))
             tag = '<span class="ph">示意图</span>' if placeholder else ''
             cards.append(
                 f'<figure><a href="{kind}/{eid}.jpg" target="_blank"><img loading="lazy" src="{kind}/{eid}.jpg" alt="{name}"></a>'

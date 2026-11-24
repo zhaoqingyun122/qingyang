@@ -113,6 +113,7 @@ qingyang/
   ```bash
   node scripts/fetch-images.mjs                          # 抓取缺失图片（Bing 图片搜索，走 HTTP）
   node scripts/fetch-images.mjs --refresh --kinds herbs  # 只重抓药材
+  node scripts/fetch-images.mjs --shopping --refresh --kinds herbs   # 药材改用购物图源（淘宝/1688/京东商品实拍图）
   node scripts/fetch-images.mjs --refresh --only herbs-shan-yao,dishes-si-shen-tang  # 单条重抓
   python scripts/finalize-images.py                      # 统一转码为宽 ≤900px 的 JPEG
   python scripts/make-placeholders.py                    # 缺图生成「示意图」占位
@@ -120,7 +121,9 @@ qingyang/
   ```
 - **图片相关性保障**：抓取时会解析每条搜索结果的「图片标题 + 来源页」，只保留
   标题/来源页包含条目名称的图片；药材优先「药材图谱 / 中华药典 / 中药大全 / 百科」等参考来源，
-  并剔除"土茯苓≠茯苓、野菊花≠菊花"这类形近异种，以及商品/广告页。
+  并剔除"土茯苓≠茯苓、野菊花≠菊花、小米手机≠小米"这类形近异种，以及商品/广告页。
+- 药材另提供 **购物图源模式**（`--shopping`）：从淘宝/1688/京东商品主图取实物照片，
+  适合药材（卖的就是实物），并给容易混淆的条目内置了精确搜词（如小米→"黄小米 五谷杂粮"）。
 - 某条老是抓不对时，可在 `assets/image-queries.json` 里手工指定搜索词：
   ```json
   { "herbs-shan-yao": "山药 中国药典 饮片 断面" }

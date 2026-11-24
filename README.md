@@ -111,12 +111,22 @@ qingyang/
   - 茶饮：`assets/teas/<茶饮id>.jpg`
 - 抓取与转码：
   ```bash
-  node scripts/fetch-images.mjs                # 抓取缺失图片（Bing 图片搜索，走 HTTP）
-  node scripts/fetch-images.mjs --refresh      # 强制重抓全部
-  python scripts/finalize-images.py            # 统一转码为宽 ≤900px 的 JPEG
+  node scripts/fetch-images.mjs                          # 抓取缺失图片（Bing 图片搜索，走 HTTP）
+  node scripts/fetch-images.mjs --refresh --kinds herbs  # 只重抓药材
+  node scripts/fetch-images.mjs --refresh --only herbs-shan-yao,dishes-si-shen-tang  # 单条重抓
+  python scripts/finalize-images.py                      # 统一转码为宽 ≤900px 的 JPEG
+  python scripts/make-placeholders.py                    # 缺图生成「示意图」占位
+  python scripts/make-review-page.py                     # 生成 assets/_review.html 对照检查页
   ```
-- 图片来源记录在 `assets/_sources.json`。**图片均来自网络公开图片，仅用于课程演示与学习，版权归原作者所有**；如需正式发布请替换为已授权素材。
-- 少数条目未能取到实拍图时，由 `python scripts/make-placeholders.py` 生成同尺寸的「示意图」占位图（渐变底色 + 名称 + 示意图标注），保证界面统一；后续拿到实拍图直接覆盖同名文件即可。
+- **图片相关性保障**：抓取时会解析每条搜索结果的「图片标题 + 来源页」，只保留
+  标题/来源页包含条目名称的图片；药材优先「药材图谱 / 中华药典 / 中药大全 / 百科」等参考来源，
+  并剔除"土茯苓≠茯苓、野菊花≠菊花"这类形近异种，以及商品/广告页。
+- 某条老是抓不对时，可在 `assets/image-queries.json` 里手工指定搜索词：
+  ```json
+  { "herbs-shan-yao": "山药 中国药典 饮片 断面" }
+  ```
+- 图片来源记录在 `assets/_sources.json`（含标题、来源页、分数、获取方式）。**图片均来自网络公开图片，仅用于课程演示与学习，版权归原作者所有**；如需正式发布请替换为已授权素材。
+- 未取到合适实拍图的条目由 `make-placeholders.py` 生成「示意图」占位图（渐变底色 + 名称 + 示意图标注）；后续拿到实拍图直接覆盖同名文件即可。
 - 新增条目时只要把图片按上述命名放入对应目录即可自动显示，无需改代码。
 
 ## 制作说明（课程要求）

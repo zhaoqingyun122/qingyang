@@ -25,3 +25,6 @@ Desktop.ini
 
 # 图片抓取原始字节（中间产物，不入库）
 assets/_raw/
+
+# 本地图片核对页（生成物，不入库）
+assets/_review.html

@@ -1,0 +1,758 @@
+{
+  "generatedAt": "2026-11-24T12:17:13.837Z",
+  "note": "图片来自 Bing 图片搜索的公开网页图片，仅用于课程演示与学习，版权归原作者所有。",
+  "items": {
+    "herbs-shan-yao": {
+      "kind": "herbs",
+      "id": "shan-yao",
+      "name": "山药",
+      "source": "http://n.sinaimg.cn/sinacn/w1193h752/20180213/464c-fyrpeie2679765.jpg",
+      "bytes": 99763,
+      "ok": true
+    },
+    "herbs-yi-yi-ren": {
+      "kind": "herbs",
+      "id": "yi-yi-ren",
+      "name": "薏苡仁",
+      "source": "http://pic1.arkoo.com/6DEEAF68749141718F5A0D8B55E944C6/picture/a1e958cf06d9801813b234f5b8890aa438b3469b.jpg",
+      "bytes": 100088,
+      "ok": true
+    },
+    "herbs-qian-shi": {
+      "kind": "herbs",
+      "id": "qian-shi",
+      "name": "芡实",
+      "source": "http://n.sinaimg.cn/sinacn/20170323/3231-fycnyhm2744219.jpg",
+      "bytes": 35033,
+      "ok": true
+    },
+    "herbs-lian-zi": {
+      "kind": "herbs",
+      "id": "lian-zi",
+      "name": "莲子",
+      "source": "http://n.sinaimg.cn/sinacn16/269/w640h429/20180805/d427-hhhczfa9076530.jpg",
+      "bytes": 66154,
+      "ok": true
+    },
+    "herbs-da-zao": {
+      "kind": "herbs",
+      "id": "da-zao",
+      "name": "大枣",
+      "source": "http://file.cnkang.com/cnkfile1/M00/14/B1/o4YBAFleVteAEIWOAAcllw8-tNI93.jpeg",
+      "bytes": 468375,
+      "ok": true
+    },
+    "herbs-gou-qi-zi": {
+      "kind": "herbs",
+      "id": "gou-qi-zi",
+      "name": "枸杞子",
+      "source": "http://www.shanggudaojiang.com/upload/image/20170401/6362666063078120892674370.jpg",
+      "bytes": 236750,
+      "ok": true
+    },
+    "herbs-long-yan-rou": {
+      "kind": "herbs",
+      "id": "long-yan-rou",
+      "name": "龙眼肉",
+      "source": "http://k.sinaimg.cn/n/sinakd20111/314/w670h444/20230922/c6ba-a969f617cc7c44f08ab202a4654fe19c.jpg/w700d1q75cms.jpg?by=cms_fixed_width",
+      "bytes": 250435,
+      "ok": true
+    },
+    "herbs-bai-he": {
+      "kind": "herbs",
+      "id": "bai-he",
+      "name": "百合",
+      "source": "http://picview.iituku.com/content/yaocai/img/202111/11/214efeb1f07ac1db.jpg/wh1200.jpg",
+      "bytes": 131276,
+      "ok": true
+    },
+    "herbs-hei-zhi-ma": {
+      "kind": "herbs",
+      "id": "hei-zhi-ma",
+      "name": "黑芝麻",
+      "source": "http://n.sinaimg.cn/front/340/w700h440/20181130/Dd-a-hpinrya8721585.jpg",
+      "bytes": 35891,
+      "ok": true
+    },
+    "herbs-hei-dou": {
+      "kind": "herbs",
+      "id": "hei-dou",
+      "name": "黑豆",
+      "source": "http://puui.qpic.cn/vcover_vt_pic/0/1o29ui77e85grdr1567129471/0",
+      "bytes": 876034,
+      "ok": true
+    },
+    "herbs-chi-xiao-dou": {
+      "kind": "herbs",
+      "id": "chi-xiao-dou",
+      "name": "赤小豆",
+      "source": "http://k.sinaimg.cn/n/front/224/w640h384/20180812/GwbD-hhqtawx2580196.jpg/w700d1q75cms.jpg",
+      "bytes": 122248,
+      "ok": true
+    },
+    "herbs-lv-dou": {
+      "kind": "herbs",
+      "id": "lv-dou",
+      "name": "绿豆",
+      "source": "",
+      "bytes": 0,
+      "ok": false
+    },
+    "herbs-xiao-mi": {
+      "kind": "herbs",
+      "id": "xiao-mi",
+      "name": "小米",
+      "source": "http://5b0988e595225.cdn.sohucs.com/images/20190820/6aeacf0097844f59a43cc58356edfb6e.jpeg",
+      "bytes": 68822,
+      "ok": true
+    },
+    "herbs-yan-mai": {
+      "kind": "herbs",
+      "id": "yan-mai",
+      "name": "燕麦",
+      "source": "",
+      "bytes": 0,
+      "ok": false
+    },
+    "herbs-wu-mei": {
+      "kind": "herbs",
+      "id": "wu-mei",
+      "name": "乌梅",
+      "source": "http://www.hbmingjie.com/uploads/oo396.jpg",
+      "bytes": 103766,
+      "ok": true
+    },
+    "herbs-shan-zha": {
+      "kind": "herbs",
+      "id": "shan-zha",
+      "name": "山楂",
+      "source": "http://p0.ifengimg.com/pmop/2017/0221/47A14E5C10BE34FC2554B439E7791F23509FF207_size23_w1280_h843.jpeg",
+      "bytes": 23581,
+      "ok": true
+    },
+    "herbs-chen-pi": {
+      "kind": "herbs",
+      "id": "chen-pi",
+      "name": "陈皮",
+      "source": "http://n.sinaimg.cn/sinacn/w640h397/20180224/a48c-fyrswmv4065262.jpg",
+      "bytes": 37949,
+      "ok": true
+    },
+    "herbs-sheng-jiang": {
+      "kind": "herbs",
+      "id": "sheng-jiang",
+      "name": "生姜",
+      "source": "http://p2.ifengimg.com/a/2017_41/848818f19c20b78_size245_w500_h333.jpg",
+      "bytes": 250845,
+      "ok": true
+    },
+    "herbs-bai-bian-dou": {
+      "kind": "herbs",
+      "id": "bai-bian-dou",
+      "name": "白扁豆",
+      "source": "http://cbu01.alicdn.com/img/ibank/2017/301/804/4702408103_716985181.jpg",
+      "bytes": 174200,
+      "ok": true
+    },
+    "herbs-fu-ling": {
+      "kind": "herbs",
+      "id": "fu-ling",
+      "name": "茯苓",
+      "source": "http://pic.616pic.com/ys_bnew_img/00/14/27/LzbE5fqzsb.jpg",
+      "bytes": 68447,
+      "ok": true
+    },
+    "herbs-he-ye": {
+      "kind": "herbs",
+      "id": "he-ye",
+      "name": "荷叶",
+      "source": "http://file.cnkang.com/cnkfile1/M00/14/BC/ooYBAFlm-PWAapiuAAW5CRNH0VQ800.png",
+      "bytes": 375049,
+      "ok": true
+    },
+    "herbs-jue-ming-zi": {
+      "kind": "herbs",
+      "id": "jue-ming-zi",
+      "name": "决明子",
+      "source": "http://file.cnkang.com/cnkfile1/M00/03/3D/o4YBAFir5-WAGj8IAARXZhbNQI072.jpeg",
+      "bytes": 284518,
+      "ok": true
+    },
+    "herbs-ju-hua": {
+      "kind": "herbs",
+      "id": "ju-hua",
+      "name": "菊花",
+      "source": "http://ccylj.changchun.gov.cn/zwdt/gzdt/202106/W020210608527291505497.png",
+      "bytes": 822767,
+      "ok": true
+    },
+    "herbs-jin-yin-hua": {
+      "kind": "herbs",
+      "id": "jin-yin-hua",
+      "name": "金银花",
+      "source": "http://n.sinaimg.cn/sinacn11/384/w2048h1536/20180517/8c72-harvfhu4839340.jpg",
+      "bytes": 901118,
+      "ok": true
+    },
+    "herbs-luo-han-guo": {
+      "kind": "herbs",
+      "id": "luo-han-guo",
+      "name": "罗汉果",
+      "source": "http://n.sinaimg.cn/sinakd20230419s/372/w640h532/20230419/e75b-027e5b6c25b0e644d55b4240b635adaf.jpg",
+      "bytes": 38241,
+      "ok": true
+    },
+    "herbs-pang-da-hai": {
+      "kind": "herbs",
+      "id": "pang-da-hai",
+      "name": "胖大海",
+      "source": "http://n.sinaimg.cn/sinakd20230110ac/713/w400h313/20230110/fb1c-8e081a214622b874181dccccfacfe222.jpg",
+      "bytes": 22751,
+      "ok": true
+    },
+    "herbs-mei-gui-hua": {
+      "kind": "herbs",
+      "id": "mei-gui-hua",
+      "name": "玫瑰花",
+      "source": "http://p3-tt.byteimg.com/large/pgc-image/184899eec1a74de4a29aa21fe19ba21e?from=pc",
+      "bytes": 56849,
+      "ok": true
+    },
+    "herbs-ge-gen": {
+      "kind": "herbs",
+      "id": "ge-gen",
+      "name": "葛根",
+      "source": "http://imgs.tom.com/shcs/201806/CONTENT892E6CDF6F0642F3.jpg",
+      "bytes": 112301,
+      "ok": true
+    },
+    "herbs-ku-qiao": {
+      "kind": "herbs",
+      "id": "ku-qiao",
+      "name": "苦荞",
+      "source": "",
+      "bytes": 0,
+      "ok": false
+    },
+    "herbs-huang-jing": {
+      "kind": "herbs",
+      "id": "huang-jing",
+      "name": "黄精",
+      "source": "http://p7.itc.cn/q_70/images03/20201024/fbb8bd4d660e4fdba7ffdedaeadfb57f.png",
+      "bytes": 84813,
+      "ok": true
+    },
+    "herbs-yu-zhu": {
+      "kind": "herbs",
+      "id": "yu-zhu",
+      "name": "玉竹",
+      "source": "http://data.geophy.cn/dzdqs-data/aps/2020/10/PIC/ysxb-36-10-3063-11.jpg",
+      "bytes": 526853,
+      "ok": true
+    },
+    "herbs-mai-dong": {
+      "kind": "herbs",
+      "id": "mai-dong",
+      "name": "麦冬",
+      "source": "http://file.cnkang.com/cnkfile1/M00/02/9C/o4YBAFh6Nb6ARAbnAADQUE6aLvA35.jpeg",
+      "bytes": 53328,
+      "ok": true
+    },
+    "herbs-bei-sha-shen": {
+      "kind": "herbs",
+      "id": "bei-sha-shen",
+      "name": "北沙参",
+      "source": "http://www.chinanev.net/Uploads/News/20240304/1709523273477209.png",
+      "bytes": 426098,
+      "ok": true
+    },
+    "herbs-huang-qi": {
+      "kind": "herbs",
+      "id": "huang-qi",
+      "name": "黄芪",
+      "source": "http://img.yimutian.com/crm/6afd6c290726310001502676050006ab-366-366C.jpg",
+      "bytes": 78337,
+      "ok": true
+    },
+    "herbs-dang-shen": {
+      "kind": "herbs",
+      "id": "dang-shen",
+      "name": "党参",
+      "source": "http://www.shtour.org/files/image/2019/04/48401ee5c54f4e3db28f0ca9a5b3885c2019411161016.jpg",
+      "bytes": 51964,
+      "ok": true
+    },
+    "herbs-ji-nei-jin": {
+      "kind": "herbs",
+      "id": "ji-nei-jin",
+      "name": "鸡内金",
+      "source": "http://n.sinaimg.cn/sinacn20190806ac/111/w554h357/20190806/9d57-iatixpn0165462.jpg",
+      "bytes": 43206,
+      "ok": true
+    },
+    "herbs-lai-fu-zi": {
+      "kind": "herbs",
+      "id": "lai-fu-zi",
+      "name": "莱菔子",
+      "source": "http://k.sinaimg.cn/n/sinacn20122/194/w1514h1080/20190630/3a94-hzfeken3674248.jpg/w700d1q75cms.jpg?by=cms_fixed_width",
+      "bytes": 282088,
+      "ok": true
+    },
+    "herbs-sha-ren": {
+      "kind": "herbs",
+      "id": "sha-ren",
+      "name": "砂仁",
+      "source": "http://file.cnkang.com/cnkfile1/M00/13/08/o4YBAFkj98qATUVuAAEnw_7KBng53.jpeg",
+      "bytes": 75715,
+      "ok": true
+    },
+    "herbs-rou-gui": {
+      "kind": "herbs",
+      "id": "rou-gui",
+      "name": "肉桂",
+      "source": "http://www.sasac.gov.cn/n2588025/n2588124/c16436405/part/16436416.jpg",
+      "bytes": 129613,
+      "ok": true
+    },
+    "herbs-zi-su": {
+      "kind": "herbs",
+      "id": "zi-su",
+      "name": "紫苏叶",
+      "source": "http://www.hyyhealth.com/media/picture/0cecd452892748ee8bab301a0707af7a@500x500.jpg",
+      "bytes": 40378,
+      "ok": true
+    },
+    "dishes-shan-yao-yi-mi-zhou": {
+      "kind": "dishes",
+      "id": "shan-yao-yi-mi-zhou",
+      "name": "山药薏米粥",
+      "source": "http://n.sinaimg.cn/sinakd20230321ac/700/w750h750/20230321/56e3-46055f861716ffd4730e545b4f1130b3.jpg",
+      "bytes": 105478,
+      "ok": true
+    },
+    "dishes-huai-shan-pai-gu-tang": {
+      "kind": "dishes",
+      "id": "huai-shan-pai-gu-tang",
+      "name": "淮山排骨汤",
+      "source": "http://pic.6ll.com/up/2025-9/202593142316320420.jpg",
+      "bytes": 49904,
+      "ok": true
+    },
+    "dishes-shan-yao-lian-zi-zhu": {
+      "kind": "dishes",
+      "id": "shan-yao-lian-zi-zhu",
+      "name": "山药莲子粥",
+      "source": "http://n.sinaimg.cn/sinacn/w1191h752/20180213/f697-fyrpeie2679302.jpg",
+      "bytes": 121585,
+      "ok": true
+    },
+    "dishes-si-shen-tang": {
+      "kind": "dishes",
+      "id": "si-shen-tang",
+      "name": "四神汤",
+      "source": "http://k.sinaimg.cn/n/sinakd2020927s/149/w600h349/20200927/fdb1-izrvxmh2354480.jpg/w700d1q75cms.jpg",
+      "bytes": 159025,
+      "ok": true
+    },
+    "dishes-fu-ling-bai-bian-dou-tang": {
+      "kind": "dishes",
+      "id": "fu-ling-bai-bian-dou-tang",
+      "name": "茯苓扁豆汤",
+      "source": "http://preview.qiantucdn.com/auto_machine/20220915/de08333e-0e58-4f04-bb79-112dbbc1d859.png!w1024_new_small_1",
+      "bytes": 648157,
+      "ok": true
+    },
+    "dishes-bai-bian-dou-shan-yao-geng": {
+      "kind": "dishes",
+      "id": "bai-bian-dou-shan-yao-geng",
+      "name": "扁豆山药羹",
+      "source": "http://n.sinaimg.cn/sinakd20201203ac/213/w2048h1365/20201203/6e13-ketnnaq5079249.jpg",
+      "bytes": 501426,
+      "ok": true
+    },
+    "dishes-hong-zao-gui-yuan-cha": {
+      "kind": "dishes",
+      "id": "hong-zao-gui-yuan-cha",
+      "name": "红枣桂圆茶",
+      "source": "http://file.cnkang.com/cnkfile1/M00/14/63/o4YBAFlTenKAaxrDAADhxqPNyRI47.jpeg",
+      "bytes": 57798,
+      "ok": true
+    },
+    "dishes-huang-qi-dang-shen-wu-ji-tang": {
+      "kind": "dishes",
+      "id": "huang-qi-dang-shen-wu-ji-tang",
+      "name": "黄芪党参乌鸡汤",
+      "source": "http://n.sinaimg.cn/sinacn/w640h605/20180224/5594-fyrwsqh8415307.jpg",
+      "bytes": 33730,
+      "ok": true
+    },
+    "dishes-huang-qi-hong-zao-ji": {
+      "kind": "dishes",
+      "id": "huang-qi-hong-zao-ji",
+      "name": "黄芪红枣粥",
+      "source": "http://file.cnkang.com/cnkfile1/M00/14/8F/ooYBAFlchvKAObaGAALpxxfz6Zw74.jpeg",
+      "bytes": 190919,
+      "ok": true
+    },
+    "dishes-dang-shen-xiao-mi-zhou": {
+      "kind": "dishes",
+      "id": "dang-shen-xiao-mi-zhou",
+      "name": "党参小米粥",
+      "source": "http://image.591moto.com/forum/202407/17/142059olzinjrkfnmigual.jpg",
+      "bytes": 153062,
+      "ok": true
+    },
+    "dishes-xiao-mi-shan-yao-zhou": {
+      "kind": "dishes",
+      "id": "xiao-mi-shan-yao-zhou",
+      "name": "小米山药粥",
+      "source": "http://puui.qpic.cn/vpic_cover/y33554kcjpn/y33554kcjpn_hz.jpg/1280",
+      "bytes": 112241,
+      "ok": true
+    },
+    "dishes-ku-qiao-cha": {
+      "kind": "dishes",
+      "id": "ku-qiao-cha",
+      "name": "苦荞茶",
+      "source": "http://file.cnkang.com/cnkfile1/M00/0A/2B/o4YBAFje-ouAdcmMAAKaNDF0wPk31.jpeg",
+      "bytes": 170548,
+      "ok": true
+    },
+    "dishes-shui-zhu-yan-mai": {
+      "kind": "dishes",
+      "id": "shui-zhu-yan-mai",
+      "name": "水煮燕麦粥",
+      "source": "http://image.jushuo.com/editor/2019-03-08/5c81de8e70466.jpg",
+      "bytes": 130603,
+      "ok": true
+    },
+    "dishes-hong-dou-yi-mi-shui": {
+      "kind": "dishes",
+      "id": "hong-dou-yi-mi-shui",
+      "name": "红豆薏米水",
+      "source": "http://n.sinaimg.cn/sinacn10113/0/w2000h1200/20191220/7a91-ikyziqw7593976.jpg",
+      "bytes": 390410,
+      "ok": true
+    },
+    "dishes-lv-dou-tang": {
+      "kind": "dishes",
+      "id": "lv-dou-tang",
+      "name": "绿豆汤",
+      "source": "http://sinastorage.com/storage.miaosha.sina.com.cn/products/201707/c3c2a25a4ab23c733553f6e8b637dbe3.jpg",
+      "bytes": 144770,
+      "ok": true
+    },
+    "dishes-ju-hua-jue-ming-cha": {
+      "kind": "dishes",
+      "id": "ju-hua-jue-ming-cha",
+      "name": "菊花决明茶",
+      "source": "http://yibaofamen.com/uploads/allimg/20210119/3-21011ZQ615913.jpg",
+      "bytes": 95118,
+      "ok": true
+    },
+    "dishes-jin-yin-hua-ju-hua-cha": {
+      "kind": "dishes",
+      "id": "jin-yin-hua-ju-hua-cha",
+      "name": "金银花菊花饮",
+      "source": "http://file.cnkang.com/cnkfile1/M00/01/DE/oYYBAFcDk-6AGirBAADoLhBz2jU09.jpeg",
+      "bytes": 59438,
+      "ok": true
+    },
+    "dishes-luo-han-guo-li-yan-yin": {
+      "kind": "dishes",
+      "id": "luo-han-guo-li-yan-yin",
+      "name": "罗汉果利咽饮",
+      "source": "http://i00.c.aliimg.com/img/ibank/2014/098/115/1605511890_306960622.jpg",
+      "bytes": 389071,
+      "ok": true
+    },
+    "dishes-ju-hua-gou-qi-cha": {
+      "kind": "dishes",
+      "id": "ju-hua-gou-qi-cha",
+      "name": "菊花枸杞茶",
+      "source": "http://puui.qpic.cn/vpic_cover/f3327dupxdy/f3327dupxdy_hz.jpg/1280",
+      "bytes": 211005,
+      "ok": true
+    },
+    "dishes-he-ye-shang-za-cha": {
+      "kind": "dishes",
+      "id": "he-ye-shang-za-cha",
+      "name": "荷叶山楂茶",
+      "source": "",
+      "bytes": 0,
+      "ok": false
+    },
+    "dishes-shan-zha-xiao-shi-cha": {
+      "kind": "dishes",
+      "id": "shan-zha-xiao-shi-cha",
+      "name": "山楂消食饮",
+      "source": "http://vip-public.people.com.cn/photo/2021/4/16/b19a5a12f4eb44a5b91725e8e79a59d2lsil_m.jpg",
+      "bytes": 74229,
+      "ok": true
+    },
+    "dishes-chen-pi-sheng-jiang-shui": {
+      "kind": "dishes",
+      "id": "chen-pi-sheng-jiang-shui",
+      "name": "陈皮生姜水",
+      "source": "http://k.sinaimg.cn/n/sinakd20220604ac/366/w641h525/20220604/54e5-2eb86595bbf74c637d02946d2cccd9c5.jpg/w700d1q75cms.jpg",
+      "bytes": 168447,
+      "ok": true
+    },
+    "dishes-chen-pi-hong-zao-cha": {
+      "kind": "dishes",
+      "id": "chen-pi-hong-zao-cha",
+      "name": "陈皮红枣茶",
+      "source": "http://www.chenpizhijia.cn/static/allimg/2512/3-25122R1063414U.webp",
+      "bytes": 33812,
+      "ok": true
+    },
+    "dishes-sheng-jiang-hong-zao-tang": {
+      "kind": "dishes",
+      "id": "sheng-jiang-hong-zao-tang",
+      "name": "生姜红枣汤",
+      "source": "http://copyright.bdstatic.com/vcg/creative/eee2bf9bdb796dc9aba9751f09d1eac9.jpg@wm_1,k_cGljX2JqaHdhdGVyLmpwZw==",
+      "bytes": 2505072,
+      "ok": true
+    },
+    "dishes-zi-su-sheng-jiang-cha": {
+      "kind": "dishes",
+      "id": "zi-su-sheng-jiang-cha",
+      "name": "紫苏生姜饮",
+      "source": "http://file.cnkang.com/cnkfile1/M00/02/95/o4YBAFh47MiAU6C3AAGmGekv-Rk16.jpeg",
+      "bytes": 108057,
+      "ok": true
+    },
+    "dishes-bai-he-lian-zi-tang": {
+      "kind": "dishes",
+      "id": "bai-he-lian-zi-tang",
+      "name": "百合莲子羹",
+      "source": "http://picview.iituku.com/iituku/thumb/5760x3840_3532_db0f1bfb6c6aa849.jpg/wh860.jpg",
+      "bytes": 60894,
+      "ok": true
+    },
+    "dishes-bai-he-yu-zhu-tang": {
+      "kind": "dishes",
+      "id": "bai-he-yu-zhu-tang",
+      "name": "百合玉竹润燥汤",
+      "source": "http://img.pconline.com.cn/images/upload/upc/tx/itbbs/1903/22/c7/138633076_1553220327224.jpg",
+      "bytes": 1391762,
+      "ok": true
+    },
+    "dishes-mai-dong-yu-zhu-yin": {
+      "kind": "dishes",
+      "id": "mai-dong-yu-zhu-yin",
+      "name": "麦冬玉竹饮",
+      "source": "http://www.kangtaiwang.com/food_upload/2025092808474192114.jpg",
+      "bytes": 94626,
+      "ok": true
+    },
+    "dishes-sha-shen-yu-zhu-tang": {
+      "kind": "dishes",
+      "id": "sha-shen-yu-zhu-tang",
+      "name": "沙参玉竹汤",
+      "source": "http://file.cnkang.com/cnkfile1/M00/02/84/ooYBAFh3dQeAFtqWAAJtIpyFTww20.jpeg",
+      "bytes": 159010,
+      "ok": true
+    },
+    "dishes-sha-shen-mai-dong-zhou": {
+      "kind": "dishes",
+      "id": "sha-shen-mai-dong-zhou",
+      "name": "沙参麦冬粥",
+      "source": "http://file.cnkang.com/cnkfile1/M00/02/2B/o4YBAFhyNyCAKzz6AAgmjH53cpo67.jpeg",
+      "bytes": 534156,
+      "ok": true
+    },
+    "dishes-gou-qi-hei-zhi-ma-hu": {
+      "kind": "dishes",
+      "id": "gou-qi-hei-zhi-ma-hu",
+      "name": "枸杞黑芝麻糊",
+      "source": "http://www.guobaihui.com/images/img/20181217/15450154535623426.jpg",
+      "bytes": 127139,
+      "ok": true
+    },
+    "dishes-hei-zhi-ma-hu-zhou": {
+      "kind": "dishes",
+      "id": "hei-zhi-ma-hu-zhou",
+      "name": "黑芝麻粥",
+      "source": "",
+      "bytes": 0,
+      "ok": false
+    },
+    "dishes-hei-dou-hong-zao-tang": {
+      "kind": "dishes",
+      "id": "hei-dou-hong-zao-tang",
+      "name": "黑豆红枣汤",
+      "source": "http://n.sinaimg.cn/sinacn17/266/w640h426/20180709/c1d3-hezpzwu1929153.jpg",
+      "bytes": 53919,
+      "ok": true
+    },
+    "dishes-mei-gui-chen-pi-cha": {
+      "kind": "dishes",
+      "id": "mei-gui-chen-pi-cha",
+      "name": "玫瑰陈皮茶",
+      "source": "http://n.sinaimg.cn/sinakd20111/399/w1280h719/20260726/c52b-556e3ff2fa5778cf9eb25257862edadc.jpg",
+      "bytes": 261337,
+      "ok": true
+    },
+    "dishes-ge-gen-shou-wu-cha": {
+      "kind": "dishes",
+      "id": "ge-gen-shou-wu-cha",
+      "name": "葛根红枣饮",
+      "source": "http://n.sinaimg.cn/sinacn20112/689/w690h799/20190406/14fc-hvhrcxm2916992.jpg",
+      "bytes": 194674,
+      "ok": true
+    },
+    "dishes-huang-jing-lian-zi-tang": {
+      "kind": "dishes",
+      "id": "huang-jing-lian-zi-tang",
+      "name": "黄精莲子汤",
+      "source": "http://p3.itc.cn/q_70/images03/20201024/756097a8f07f426d9e4446749365db46.jpeg",
+      "bytes": 178357,
+      "ok": true
+    },
+    "dishes-fu-ling-zhou": {
+      "kind": "dishes",
+      "id": "fu-ling-zhou",
+      "name": "茯苓粥",
+      "source": "http://puui.qpic.cn/vpic_cover/u3241k7covq/u3241k7covq_hz.jpg/1280",
+      "bytes": 89113,
+      "ok": true
+    },
+    "dishes-sha-ren-zhu-du-tang": {
+      "kind": "dishes",
+      "id": "sha-ren-zhu-du-tang",
+      "name": "砂仁猪肚汤",
+      "source": "http://file.cnkang.com/cnkfile1/M00/15/0D/o4YBAFlsMLeAcApkAAFmkVvAE2w28.jpeg",
+      "bytes": 91793,
+      "ok": true
+    },
+    "dishes-ji-nei-jin-shan-yao-zhou": {
+      "kind": "dishes",
+      "id": "ji-nei-jin-shan-yao-zhou",
+      "name": "鸡内金山药粥",
+      "source": "http://n.sinaimg.cn/sinacn20190806ac/82/w515h367/20190806/6864-iatixpn0165465.jpg",
+      "bytes": 30563,
+      "ok": true
+    },
+    "dishes-lai-fu-zi-chen-pi-cha": {
+      "kind": "dishes",
+      "id": "lai-fu-zi-chen-pi-cha",
+      "name": "莱菔子陈皮茶",
+      "source": "http://www.hp.gov.cn/img/0/754/754325/8639150.jpg",
+      "bytes": 75953,
+      "ok": true
+    },
+    "dishes-wu-mei-suan-mei-tang": {
+      "kind": "dishes",
+      "id": "wu-mei-suan-mei-tang",
+      "name": "乌梅酸梅汤",
+      "source": "http://file.cnkang.com/cnkfile1/M00/14/66/o4YBAFlTwDCADqZNAAej5pKvah067.jpeg",
+      "bytes": 500710,
+      "ok": true
+    },
+    "dishes-rou-gui-jiang-mi-zhou": {
+      "kind": "dishes",
+      "id": "rou-gui-jiang-mi-zhou",
+      "name": "肉桂姜米粥",
+      "source": "http://www.zknd.cn/upload/at/image/20190424/1556072642441332K6nL.jpg",
+      "bytes": 724669,
+      "ok": true
+    },
+    "teas-chen-pi-fu-ling-cha": {
+      "kind": "teas",
+      "id": "chen-pi-fu-ling-cha",
+      "name": "陈皮茯苓茶",
+      "source": "http://file.cnkang.com/cnkfile1/M00/10/67/o4YBAFj4L7iAcV7dAAr0Q8TJYcs05.jpeg",
+      "bytes": 717891,
+      "ok": true
+    },
+    "teas-hong-zao-gui-yuan-cha": {
+      "kind": "teas",
+      "id": "hong-zao-gui-yuan-cha",
+      "name": "红枣桂圆茶",
+      "source": "",
+      "bytes": 0,
+      "ok": false
+    },
+    "teas-bai-he-lian-zi-cha": {
+      "kind": "teas",
+      "id": "bai-he-lian-zi-cha",
+      "name": "百合莲子茶",
+      "source": "",
+      "bytes": 0,
+      "ok": false
+    },
+    "teas-yi-mi-chi-xiao-dou-cha": {
+      "kind": "teas",
+      "id": "yi-mi-chi-xiao-dou-cha",
+      "name": "薏米赤小豆茶",
+      "source": "http://pic1.kevke.com/mtw/6272/20180607130902174272.jpg",
+      "bytes": 995957,
+      "ok": true
+    },
+    "teas-ju-hua-jin-yin-hua-cha": {
+      "kind": "teas",
+      "id": "ju-hua-jin-yin-hua-cha",
+      "name": "菊花金银花茶",
+      "source": "http://n.sinaimg.cn/sinacn20107/549/w600h749/20190427/07db-hvvuiyp2168388.jpg",
+      "bytes": 131340,
+      "ok": true
+    },
+    "teas-luo-han-guo-chen-pi-cha": {
+      "kind": "teas",
+      "id": "luo-han-guo-chen-pi-cha",
+      "name": "罗汉果陈皮茶",
+      "source": "",
+      "bytes": 0,
+      "ok": false
+    },
+    "teas-mei-gui-hua-cha": {
+      "kind": "teas",
+      "id": "mei-gui-hua-cha",
+      "name": "玫瑰花茶",
+      "source": "http://img1.bala.cc/allimg/2211/21578385.jpg",
+      "bytes": 40312,
+      "ok": true
+    },
+    "teas-mai-dong-yu-zhu-cha": {
+      "kind": "teas",
+      "id": "mai-dong-yu-zhu-cha",
+      "name": "麦冬玉竹茶",
+      "source": "http://n.sinaimg.cn/spider2020116/267/w640h427/20200116/6884-inhcyca2340011.jpg",
+      "bytes": 55778,
+      "ok": true
+    },
+    "teas-jue-ming-zi-cha": {
+      "kind": "teas",
+      "id": "jue-ming-zi-cha",
+      "name": "决明子茶",
+      "source": "http://file.cnkang.com/cnkfile1/M00/02/37/oYYBAFifG3OAS9t6AADOYn1HSBA27.jpeg",
+      "bytes": 52834,
+      "ok": true
+    },
+    "teas-huang-qi-dang-shen-cha": {
+      "kind": "teas",
+      "id": "huang-qi-dang-shen-cha",
+      "name": "黄芪党参茶",
+      "source": "http://n.sinaimg.cn/sinacn/w640h622/20180224/666e-fyrwsqh8415734.jpg",
+      "bytes": 45238,
+      "ok": true
+    },
+    "teas-shan-zha-he-ye-cha": {
+      "kind": "teas",
+      "id": "shan-zha-he-ye-cha",
+      "name": "山楂荷叶茶",
+      "source": "http://puui.qpic.cn/vpic_cover/h3075fgwnh9/h3075fgwnh9_hz.jpg/1280",
+      "bytes": 144339,
+      "ok": true
+    },
+    "teas-sheng-jiang-hong-tang-cha": {
+      "kind": "teas",
+      "id": "sheng-jiang-hong-tang-cha",
+      "name": "生姜红糖茶",
+      "source": "",
+      "bytes": 0,
+      "ok": false
+    }
+  }
+}

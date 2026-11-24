@@ -215,6 +215,59 @@ section('新用户引导');
   ok('css 有引导样式', /\.onboard-mask/.test(css) && /\.onboard-grid/.test(css));
 }
 
+// ---------- 1.13 图片资源（药材 / 药膳 / 茶饮） ----------
+section('图片资源');
+{
+  const imgRoot = path.join(ROOT, 'assets');
+  const count = (dir) => (fs.existsSync(path.join(imgRoot, dir)) ? fs.readdirSync(path.join(imgRoot, dir)).filter((f) => f.endsWith('.jpg')).length : 0);
+  ok('药材图片已入库', count('herbs') >= 1, `${count('herbs')} 张`);
+  ok('药膳图片已入库', count('dishes') >= 1, `${count('dishes')} 张`);
+  ok('茶饮图片已入库', count('teas') >= 1, `${count('teas')} 张`);
+  const homeSrc = fs.readFileSync(path.join(ROOT, 'js/views/home.js'), 'utf8');
+  const imgSrc = fs.readFileSync(path.join(ROOT, 'js/lib/images.js'), 'utf8');
+  const css = fs.readFileSync(path.join(ROOT, 'css/app.css'), 'utf8');
+  ok('按 id 约定命名', /assets\/\$\{DIR\[kind\] \|\| kind\}\/\$\{id\}\.jpg/.test(imgSrc));
+  ok('卡片与详情使用图片', /imageHtml\('herb'/.test(homeSrc) && /imageHtml\('dish'/.test(homeSrc));
+  ok('缺图有文字占位', imgSrc.includes('noimg') && /\.pic-wrap::before/.test(css));
+  ok('有抓图与转码脚本', fs.existsSync(path.join(ROOT, 'scripts/fetch-images.mjs')) && fs.existsSync(path.join(ROOT, 'scripts/finalize-images.py')));
+  ok('记录图片来源清单', fs.existsSync(path.join(ROOT, 'assets/_sources.json')));
+}
+
+// ---------- 1.14 今日时令（天气 + 节气） ----------
+section('今日时令（天气与节气）');
+{
+  const alm = fs.readFileSync(path.join(ROOT, 'js/data/almanac.js'), 'utf8');
+  const nTerms = (alm.match(/name: '[^']+', month:/g) || []).length;
+  ok('收录 24 节气', nTerms === 24, `${nTerms} 个`);
+  ok('节气配药膳与典籍出处', /recipes: \[/.test(alm) && /source: '《/.test(alm));
+  ok('天气规则覆盖主要天气', (alm.match(/match: \(w\)/g) || []).length >= 8);
+  const season = fs.readFileSync(path.join(ROOT, 'js/lib/season.js'), 'utf8');
+  ok('节气离线可算', /export function currentTerm/.test(season) && season.includes('0.2422'));
+  const weather = fs.readFileSync(path.join(ROOT, 'js/lib/weather.js'), 'utf8');
+  ok('支持定位与实时天气', /export function locate/.test(weather) && /fetchWeather/.test(weather) && weather.includes('wttr.in'));
+  ok('天气失败可降级', /export function adviceFor/.test(weather));
+  const home = fs.readFileSync(path.join(ROOT, 'js/views/home.js'), 'utf8');
+  const css = fs.readFileSync(path.join(ROOT, 'css/app.css'), 'utf8');
+  ok('首页显示时令卡', home.includes('season-panel') && home.includes('weather-slot') && home.includes('loc-btn'));
+  ok('时令卡有样式', /\.season-card/.test(css) && /\.season-grid/.test(css));
+}
+
+// ---------- 1.15 状况自由搜索 ----------
+section('状况自由搜索');
+{
+  const ft = fs.readFileSync(path.join(ROOT, 'js/lib/freetext.js'), 'utf8');
+  const topics = (ft.match(/^  [\u4e00-\u9fa5]+: \[/gm) || []).length;
+  ok('收录口语同义词主题', topics >= 10, `${topics} 组`);
+  ok('自由文本打分并给理由', /export function searchFreeText/.test(ft) && /why: \[\.\.\.new Set\(why\)\]/.test(ft));
+  ok('口语映射到已有状况', /TOPIC_CONDITIONS/.test(ft));
+  const lit = fs.readFileSync(path.join(ROOT, 'js/data/literature.js'), 'utf8');
+  ok('文献出处库覆盖药材', (lit.match(/^  '[a-z-]+': \[/gm) || []).length >= 35);
+  ok('文献可按条目查询', /export function refsFor/.test(lit));
+  const cond = fs.readFileSync(path.join(ROOT, 'js/views/conditions.js'), 'utf8');
+  ok('状况页有自由搜索框', cond.includes('free-q') && /renderFreeResults/.test(cond));
+  ok('结果展示理由与文献', cond.includes("refsFor('dish'") && cond.includes('识别到'));
+}
+
 // ---------- 2. 内容数据 ----------
 section('内容数据');
 const substances = (await import(pathToFileURL(path.join(ROOT, 'js/data/substances.js')).href)).SUBSTANCES;

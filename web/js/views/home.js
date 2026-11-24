@@ -4,6 +4,9 @@ import { esc, html, qs, qsa, toast, modal, downloadBlob } from '../lib/dom.js';
 import { CATEGORY_META } from '../lib/seed.js';
 import { searchAll } from '../lib/search.js';
 import { TEAS } from '../data/teas.js';
+import { imageHtml } from '../lib/images.js';
+import { currentTerm, termLabel } from '../lib/season.js';
+import { savedPos, locate, fetchWeather, adviceFor, readCache } from '../lib/weather.js';
 
 let state = {
   q: '',
@@ -18,6 +21,7 @@ function card(s, compact) {
   const meta = CATEGORY_META[s.category] || CATEGORY_META['其他'];
   const recipeCount = store.recipesOfSubstance(s.id).length;
   return `<a class="sub-card ${compact ? 'compact' : ''}" data-link href="${page(s.id)}">
+    ${imageHtml('herb', s.id, s.name, 'sub-pic')}
     <div class="sub-top">
       <span class="sub-cat" style="--tone:${meta.tone}">${esc(s.category)}</span>
       <span class="sub-recipe">${recipeCount} 道药膳</span>
@@ -255,6 +259,93 @@ function favoriteSubstances() {
     .slice(0, 6);
 }
 
+// 药膳快捷链接（时令/天气推荐用）
+function recipeLink(id) {
+  const r = store.recipe(id);
+  if (!r) return '';
+  return `<a class="tag" data-link href="/recipe/${r.id}">🍲 ${esc(r.name)}</a>`;
+}
+
+// 「今日时令」：节气（离线计算）+ 天气（定位后获取，失败则降级为按时令推荐）
+function seasonPanel() {
+  const info = currentTerm();
+  const t = info.term;
+  return `<section class="panel season-panel">
+    <div class="panel-head">
+      <h2>今日时令 · 天气与节气</h2>
+      <button class="btn btn-sm btn-ghost" id="loc-btn">📍 定位并获取天气</button>
+    </div>
+    <div class="season-grid">
+      <div class="season-card">
+        <span class="season-kicker">节气 · ${esc(t.season)}季</span>
+        <b class="season-title">${esc(t.name)}</b>
+        <span class="muted small">${esc(termLabel(info))}</span>
+        <p>${esc(t.tip)}</p>
+        <div class="tagbox">${t.recipes.map((id) => recipeLink(id)).join('')}</div>
+        <p class="small muted">📖 ${esc(t.source)}</p>
+      </div>
+      <div class="season-card" id="weather-slot">
+        <span class="season-kicker">天气</span>
+        <b class="season-title">按时令推荐</b>
+        <p class="muted small">点右上角「定位并获取天气」，可按当地实时天气推荐今天的药膳；未获取到天气时先按节气推荐。</p>
+        <div class="tagbox">${t.recipes.slice(0, 3).map((id) => recipeLink(id)).join('')}</div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function weatherHtml(w) {
+  const adv = adviceFor(w);
+  return `<span class="season-kicker">天气 · ${esc(adv.title)}</span>
+    <b class="season-title">${Number.isFinite(w.temp) ? w.temp : '--'}° ${esc(w.text || '')}</b>
+    <span class="muted small">${esc(w.city || '当前位置')}${Number.isFinite(w.humidity) ? ` · 湿度 ${w.humidity}%` : ''}</span>
+    <p>${esc(adv.advice)}</p>
+    <div class="tagbox">${(adv.recipes || []).map((id) => recipeLink(id)).join('')}</div>`;
+}
+
+function weatherFallback(reason) {
+  const t = currentTerm().term;
+  const why =
+    reason === 'denied'
+      ? '定位未授权，先按节气推荐'
+      : reason === 'unsupported'
+        ? '本浏览器不支持定位，先按节气推荐'
+        : '暂时获取不到实时天气（离线或网络受限），先按节气推荐';
+  return `<span class="season-kicker">天气</span>
+    <b class="season-title">离线 · 按时令推荐</b>
+    <span class="muted small">${esc(why)}</span>
+    <div class="tagbox">${t.recipes.slice(0, 3).map((id) => recipeLink(id)).join('')}</div>`;
+}
+
+// 天气区交互：缓存优先 → 已保存定位自动取 → 手动定位
+async function initWeather(view) {
+  const slot = qs('#weather-slot', view);
+  if (!slot) return;
+  const btn = qs('#loc-btn', view);
+  const cached = readCache();
+  if (cached) slot.innerHTML = weatherHtml(cached);
+
+  const run = async (force) => {
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = '定位中…';
+    }
+    const pos = savedPos() || (await locate());
+    let w = { ok: false, reason: 'error' };
+    if (pos && pos.ok) w = await fetchWeather(pos.lat, pos.lon);
+    else if (pos && !pos.ok) w = { ok: false, reason: pos.reason };
+    slot.innerHTML = w.ok ? weatherHtml(w) : weatherFallback(w.reason);
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = '📍 更新天气';
+    }
+  };
+
+  if (btn) btn.addEventListener('click', () => run(true));
+  const pos = savedPos();
+  if (pos && !cached) run(false);
+}
+
 export function renderHome(view, { query }) {
   if (query?.get('q') != null) state.q = query.get('q');
   if (query?.get('cat')) state.category = query.get('cat');
@@ -285,6 +376,8 @@ export function renderHome(view, { query }) {
         </div>
       </div>
     </section>
+
+    ${seasonPanel()}
 
     ${favBookSection()}${checkinSection()}
 
@@ -438,6 +531,8 @@ export function renderHome(view, { query }) {
 
   const shopBtn = qs('#shopping-btn', view);
   if (shopBtn) shopBtn.addEventListener('click', () => openShoppingList());
+
+  initWeather(view);
 }
 
 export function setHomeQuery(q) {
@@ -459,6 +554,7 @@ export function renderSubstancePage(view, id) {
     <div class="crumb"><a data-link href="/">首页</a> / <a data-link href="/?cat=${esc(encodeURIComponent(s.category))}">${esc(s.category)}</a> / <b>${esc(s.name)}</b></div>
 
     <section class="detail-head">
+      ${imageHtml('herb', s.id, s.name, 'detail-pic')}
       <div>
         <div class="sub-cat" style="--tone:${meta.tone}">${esc(s.category)}</div>
         <h1>${esc(s.name)}</h1>
@@ -554,6 +650,7 @@ function bindFav(view, type, id, label) {
 export function recipeCard(r) {
   const subs = (r.substanceIds || []).map((id) => store.substance(id)).filter(Boolean);
   return `<a class="recipe-card" data-link href="/recipe/${r.id}">
+    ${imageHtml('dish', r.id, r.name, 'rc-pic')}
     <div class="rc-head"><b>${esc(r.name)}</b><span class="small muted">${subs.map((s) => esc(s.name)).join(' + ')}</span></div>
     <p class="rc-fit">${esc(r.fit || '')}</p>
     <div class="rc-portions">
@@ -575,6 +672,7 @@ export function renderRecipePage(view, id) {
   view.innerHTML = html`
     <div class="crumb"><a data-link href="/">首页</a> / <a data-link href="/conditions">身体状况</a> / <b>${esc(r.name)}</b></div>
     <section class="panel recipe-detail">
+      ${imageHtml('dish', r.id, r.name, 'recipe-pic')}
       <h1>${esc(r.name)}</h1>
       <button class="btn btn-sm fav-btn ${store.isBookmarked('recipe', r.id) ? 'on' : ''}" data-fav-type="recipe" data-fav-id="${r.id}">${store.isBookmarked('recipe', r.id) ? '♥ 已收藏' : '＋ 收藏到食谱本'}</button>
       <div class="tagbox">

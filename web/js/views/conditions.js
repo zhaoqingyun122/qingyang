@@ -1,13 +1,17 @@
 // 青养 · 身体状况 → 适用物质 → 药膳（含成人 / 青少年分龄剂量）
 import { store } from '../lib/store.js';
-import { esc, html, qs, qsa, toast, modal } from '../lib/dom.js';
+import { esc, html, qs, qsa, toast, modal, debounce } from '../lib/dom.js';
 import { recipeCard } from './home.js';
 import { MEDICAL_GUIDE } from '../data/medical.js';
 import { TEAS } from '../data/teas.js';
+import { imageHtml } from '../lib/images.js';
+import { searchFreeText } from '../lib/freetext.js';
+import { refsFor } from '../data/literature.js';
 
 function teaCard(t) {
   const on = store.isBookmarked('tea', t.id);
   return `<div class="tea-card">
+    ${imageHtml('tea', t.id, t.name, 'tea-pic')}
     <div class="tea-head"><b>🍵 ${esc(t.name)}</b><button class="fav-btn fav-sm ${on ? 'on' : ''}" data-fav-type="tea" data-fav-id="${t.id}" title="收藏到食谱本">${on ? '♥' : '＋'}</button></div>
     <p class="tea-ing">配料：${esc((t.ingredients || []).join('、'))}</p>
     <p class="small muted">${esc(t.method || '')}</p>
@@ -60,6 +64,22 @@ export function renderConditions(view, { query }) {
       </datalist>
     </section>
 
+    <section class="panel free-search">
+      <div class="panel-head">
+        <h2>按你的情况搜药膳</h2>
+        <span class="muted small">不必对着上面的症状找，用自己的话说也行</span>
+      </div>
+      <div class="self-check">
+        <input class="input big" id="free-q" placeholder="例：最近总是失眠、口也干，想找安神润燥的药膳" />
+        <button class="btn btn-primary" id="free-btn">搜索</button>
+      </div>
+      <div class="free-tags">
+        <span class="muted small">试试：</span>
+        ${['失眠', '口干咽燥', '怕冷', '胃口差', '上火', '便秘', '湿气重', '眼睛干'].map((k) => `<button class="chip" data-free="${k}">${k}</button>`).join('')}
+      </div>
+      <div id="free-result" class="free-result"></div>
+    </section>
+
     <section class="cond-grid">
       ${store.conditions
         .map((c) => {
@@ -102,7 +122,95 @@ export function renderConditions(view, { query }) {
   };
   bind();
 
+  // 自由搜索：用户用自己的话找药膳（同义词 → 主题 → 状况/药膳）
+  const freeInput = qs('#free-q', view);
+  const freeBox = qs('#free-result', view);
+  const doFree = debounce(() => renderFreeResults(freeBox, freeInput.value), 180);
+  freeInput.addEventListener('input', doFree);
+  freeInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') renderFreeResults(freeBox, freeInput.value);
+  });
+  qs('#free-btn', view).addEventListener('click', () => renderFreeResults(freeBox, freeInput.value));
+  qsa('[data-free]', view).forEach((b) =>
+    b.addEventListener('click', () => {
+      freeInput.value = b.dataset.free;
+      renderFreeResults(freeBox, b.dataset.free);
+      freeInput.focus();
+    })
+  );
+  const wantQ = query?.get('q');
+  if (wantQ) {
+    freeInput.value = wantQ;
+    renderFreeResults(freeBox, wantQ);
+  }
+
   if (active) renderConditionDetail(view, active);
+}
+
+/** 自由搜索结果显示：药膳优先，其次物质、状况；每条给「为什么推荐」与文献出处 */
+function renderFreeResults(box, q) {
+  if (!box) return;
+  const res = searchFreeText(q);
+  if (!String(q || '').trim()) {
+    box.innerHTML = '';
+    return;
+  }
+  if (res.tooShort) {
+    box.innerHTML = '<p class="small muted">再多写两个字试试，比如「失眠」「口干」「怕冷」。</p>';
+    return;
+  }
+  const total = res.recipes.length + res.substances.length + res.conditions.length;
+  if (!total) {
+    box.innerHTML = `<p class="muted">没找到「${esc(res.query)}」相关的药膳。换个说法，或点上面的常用词试试；也可以直接选上面的状况卡片。</p>`;
+    return;
+  }
+  box.innerHTML = `
+    <p class="small muted result-line">
+      ${res.topics.length ? `识别到：<b>${res.topics.map((t) => esc(t)).join('、')}</b> · ` : ''}
+      找到 ${res.recipes.length} 道药膳、${res.substances.length} 种物质、${res.conditions.length} 个相近状况
+    </p>
+    ${
+      res.recipes.length
+        ? `<div class="free-list">${res.recipes
+            .map(
+              ({ r, why }) => `<a class="free-item" data-link href="/recipe/${r.id}">
+                ${imageHtml('dish', r.id, r.name, 'free-pic')}
+                <div class="free-body">
+                  <div class="free-head"><b>${esc(r.name)}</b><span class="chip soft">${esc(why.join(' · '))}</span></div>
+                  <p class="small muted">${esc(r.fit || '')}</p>
+                  <div class="dose-line">
+                    <span class="dose adult">成人 ${esc(r.adultPortion || '')}</span>
+                    <span class="dose teen">青少年 ${esc(r.teenPortion || '')}</span>
+                  </div>
+                  <p class="small muted">📖 ${refsFor('dish', r.id).map((x) => esc(x)).join(' ')}</p>
+                </div>
+              </a>`
+            )
+            .join('')}</div>`
+        : ''
+    }
+    ${
+      res.substances.length
+        ? `<h4 class="free-sub">相关物质</h4><div class="tagbox">${res.substances
+            .map(({ s, why }) => `<a class="tag" data-link href="/substance/${s.id}" title="${esc(why.join(' · '))}">🌿 ${esc(s.name)}</a>`)
+            .join('')}</div>`
+        : ''
+    }
+    ${
+      res.conditions.length
+        ? `<h4 class="free-sub">相近状况</h4><div class="tagbox">${res.conditions
+            .map(({ c }) => `<button class="tag cond" data-jump2="${c.id}">${esc(c.name)}</button>`)
+            .join('')}</div>`
+        : ''
+    }
+    <p class="small muted free-note">以上为中医食疗文献中的常见搭配整理，仅供日常饮食参考，不替代医生诊断与处方。</p>`;
+
+  qsa('[data-jump2]', box).forEach((b) =>
+    b.addEventListener('click', () => {
+      const view = box.closest('#view') || document;
+      selectCondition(b.dataset.jump2, view, qs('#free-q', view)?.value || '');
+    })
+  );
 }
 
 function selectCondition(id, view, query) {

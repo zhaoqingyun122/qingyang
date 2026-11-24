@@ -800,6 +800,66 @@ async function main() {
   await shot('19-onboard');
 }
 
+  if (want('图片')) {
+  console.log('\n[图片]');
+  await goto('/', 1400);
+  await evaluate(`document.querySelector('.sub-pic')?.scrollIntoView({ block: 'center' })`);
+  await new Promise((r) => setTimeout(r, 900));
+  const img = await evaluate(`(() => { const im = document.querySelector('.sub-pic img'); return im ? { n: im.naturalWidth, src: im.getAttribute('src') } : null })()`);
+  ok('首页卡片显示药材图片', !!img.value && img.value.n > 50, JSON.stringify(img.value));
+  await goto('/substance/shan-yao', 1000);
+  await evaluate(`document.querySelector('.detail-pic')?.scrollIntoView()`);
+  await new Promise((r) => setTimeout(r, 700));
+  const det = await evaluate(`(() => { const im = document.querySelector('.detail-pic img'); return im ? im.naturalWidth : 0 })()`);
+  ok('物质详情显示图片', det.value > 50, String(det.value));
+  await goto('/recipe/shan-yao-yi-mi-zhou', 1000);
+  await evaluate(`document.querySelector('.recipe-pic')?.scrollIntoView()`);
+  await new Promise((r) => setTimeout(r, 700));
+  const dish = await evaluate(`(() => { const im = document.querySelector('.recipe-pic img'); return im ? im.naturalWidth : 0 })()`);
+  ok('药膳详情显示图片', dish.value > 50, String(dish.value));
+  await shot('20-images');
+}
+
+if (want('时令')) {
+  console.log('\n[今日时令]');
+  await goto('/', 1400);
+  const panel = await evaluate(`(() => {
+    const el = document.querySelector('.season-panel');
+    return el ? { title: el.querySelector('.season-title')?.textContent || '', tags: el.querySelectorAll('.tag').length } : null;
+  })()`);
+  ok('首页显示今日时令卡', !!panel.value, JSON.stringify(panel.value));
+  ok('节气名称已渲染', !!(panel.value?.title || '').length, JSON.stringify(panel.value?.title));
+  ok('节气带药膳推荐', (panel.value?.tags || 0) >= 2, String(panel.value?.tags));
+  const hasBtn = await evaluate(`!!document.querySelector('#loc-btn')`);
+  ok('有定位按钮', hasBtn.value === true, JSON.stringify(hasBtn));
+  await evaluate(`document.querySelector('#loc-btn')?.click()`);
+  await new Promise((r) => setTimeout(r, 11000));
+  const slot = await evaluate(`document.querySelector('#weather-slot')?.textContent || ''`);
+  ok('定位不可用时降级为按节气推荐', /按时令推荐|°/.test(slot.value || ''), JSON.stringify(String(slot.value || '').slice(0, 40)));
+  await shot('21-season');
+}
+
+if (want('搜索')) {
+  console.log('\n[按情况搜药膳]');
+  await goto('/conditions', 1200);
+  const has = await evaluate(`!!document.querySelector('#free-q')`);
+  ok('状况页有自由搜索框', has.value === true, JSON.stringify(has));
+  await evaluate(`(() => { const i = document.querySelector('#free-q'); i.value = '最近总是失眠、口也干'; i.dispatchEvent(new Event('input', { bubbles: true })); })()`);
+  await new Promise((r) => setTimeout(r, 900));
+  const res = await evaluate(`(() => {
+    const box = document.querySelector('#free-result');
+    return { n: box?.querySelectorAll('.free-item').length || 0, reasons: box?.querySelectorAll('.free-head .chip').length || 0, text: box?.textContent || '' };
+  })()`);
+  ok('搜索结果返回药膳', (res.value?.n || 0) >= 1, JSON.stringify(res.value?.n));
+  ok('结果给出推荐理由', (res.value?.reasons || 0) >= 1, JSON.stringify(res.value?.reasons));
+  ok('结果包含文献出处', /《/.test(res.value?.text || ''), JSON.stringify((res.value?.text || '').slice(0, 30)));
+  await evaluate(`document.querySelector('.free-item')?.click()`);
+  await new Promise((r) => setTimeout(r, 900));
+  const url = await evaluate(`location.hash`);
+  ok('点击结果进入药膳详情', /^#\/recipe\//.test(url.value || ''), JSON.stringify(url.value));
+  await shot('22-free-search');
+}
+
   console.log('\n[错误检查]');
   const errs = consoleErrors.filter((e) => !/favicon|Download the React/i.test(e));
   ok('全流程无 JS 运行时异常', errs.length === 0, errs.slice(0, 5).join(' | '));

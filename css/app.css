@@ -630,3 +630,79 @@ button.link-btn:hover { color: var(--green); }
 .onboard-item span { font-size: 13px; color: var(--ink-2); }
 #onboard-close { width: 100%; }
 body.dark .onboard-item { background: var(--bg); }
+
+/* ================= 图片与占位（药材 / 药膳 / 茶饮） ================= */
+.pic-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #e9f1e4 0%, #d8e7d0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3d6b4e;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.pic-wrap::before {
+  content: attr(data-txt);
+  font-size: 24px;
+  opacity: 0.55;
+  letter-spacing: 1px;
+}
+.pic-wrap img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.pic-wrap.noimg::before { opacity: 0.8; }
+body.dark .pic-wrap { background: linear-gradient(135deg, #24322a 0%, #1d2a22 100%); color: #9cc8a8; }
+
+.sub-pic { width: 100%; height: 104px; margin-bottom: 10px; }
+.detail-pic { width: 190px; height: 142px; border-radius: 12px; }
+.rc-pic { width: 100%; height: 96px; margin-bottom: 8px; }
+.recipe-pic { width: 100%; height: 220px; border-radius: 12px; margin-bottom: 14px; }
+.tea-pic { width: 100%; height: 88px; margin-bottom: 8px; }
+.free-pic { width: 96px; height: 78px; border-radius: 8px; }
+
+/* ================= 今日时令（天气 + 节气） ================= */
+.season-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.season-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.season-kicker { font-size: 12px; color: var(--green-d); font-weight: 700; letter-spacing: 0.5px; }
+.season-title { font-size: 20px; color: var(--ink); }
+.season-card p { margin: 4px 0; }
+.season-card .tagbox { margin-top: 4px; }
+body.dark .season-card { background: var(--bg); }
+
+/* ================= 自由搜索药膳 ================= */
+.free-search .self-check { margin-bottom: 8px; }
+.free-tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 6px; }
+.free-result { margin-top: 6px; }
+.free-list { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.free-item {
+  display: flex;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px;
+  background: var(--card);
+  color: inherit;
+  text-decoration: none;
+}
+.free-item:hover { border-color: var(--green); box-shadow: var(--shadow); }
+.free-body { flex: 1; min-width: 0; }
+.free-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+.free-head b { color: var(--green-d); }
+.free-sub { margin: 14px 0 6px; font-size: 14px; color: var(--ink-2); }
+.free-note { margin-top: 10px; }
+body.dark .free-item { background: var(--card); }

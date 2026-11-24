@@ -21,12 +21,14 @@ const MIME = {
   '.md': 'text/markdown; charset=utf-8',
   '.txt': 'text/plain; charset=utf-8',
   '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
   '.webp': 'image/webp',
   '.ico': 'image/x-icon',
 };
 
 // 只对外提供网页运行所需的静态资源类型
-const SAFE_EXT = new Set(['.html', '.js', '.mjs', '.css', '.json', '.svg', '.md', '.txt', '.png', '.webp', '.ico']);
+const SAFE_EXT = new Set(['.html', '.js', '.mjs', '.css', '.json', '.svg', '.md', '.txt', '.png', '.jpg', '.jpeg', '.webp', '.ico']);
 
 function argValue(flag) {
   const i = process.argv.indexOf(flag);
